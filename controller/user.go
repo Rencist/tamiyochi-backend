@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"gin-gorm-clean-template/common"
-	"gin-gorm-clean-template/dto"
-	"gin-gorm-clean-template/entity"
-	"gin-gorm-clean-template/service"
 	"net/http"
+	"tamiyochi-backend/common"
+	"tamiyochi-backend/dto"
+	"tamiyochi-backend/entity"
+	"tamiyochi-backend/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -79,10 +79,10 @@ func(uc *userController) LoginUser(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}
-	token := uc.jwtService.GenerateToken(user.ID, user.Role)
+	token := uc.jwtService.GenerateToken(user.ID, user.Peran)
 	userResponse := entity.Authorization{
 		Token: token,
-		Role: user.Role,
+		Peran: user.Peran,
 	}
 	
 	response := common.BuildResponse(true, "Berhasil Login", userResponse)

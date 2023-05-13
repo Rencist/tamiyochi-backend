@@ -1,4 +1,4 @@
-module gin-gorm-clean-template
+module tamiyochi-backend
 
 go 1.20
 

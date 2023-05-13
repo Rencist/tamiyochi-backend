@@ -1,14 +1,14 @@
 package main
 
 import (
-	"gin-gorm-clean-template/common"
-	"gin-gorm-clean-template/config"
-	"gin-gorm-clean-template/controller"
-	"gin-gorm-clean-template/repository"
-	"gin-gorm-clean-template/routes"
-	"gin-gorm-clean-template/service"
 	"net/http"
 	"os"
+	"tamiyochi-backend/common"
+	"tamiyochi-backend/config"
+	"tamiyochi-backend/controller"
+	"tamiyochi-backend/repository"
+	"tamiyochi-backend/routes"
+	"tamiyochi-backend/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"

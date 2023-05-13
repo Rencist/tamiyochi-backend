@@ -11,14 +11,14 @@ import (
 )
 
 type JWTService interface {
-	GenerateToken(userID uuid.UUID, role string) string
+	GenerateToken(userID uuid.UUID, peran string) string
 	ValidateToken(token string) (*jwt.Token, error)
 	GetUserIDByToken(token string) (uuid.UUID, error)
 }
 
 type jwtCustomClaim struct {
 	UserID uuid.UUID 		`json:"user_id"`
-	Role   string 			`json:"role"`
+	Peran   string 			`json:"peran"`
 	jwt.RegisteredClaims
 }
 
@@ -42,10 +42,10 @@ func getSecretKey() string {
 	return secretKey
 }
 
-func (j *jwtService) GenerateToken(userID uuid.UUID, role string) string {
+func (j *jwtService) GenerateToken(userID uuid.UUID, peran string) string {
 	claims := &jwtCustomClaim{
 		userID,
-		role,
+		peran,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 120)),
 			Issuer:    j.issuer,

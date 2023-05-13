@@ -14,5 +14,5 @@ type Timestamp struct {
 
 type Authorization struct {
 	Token string `json:"token"`
-	Role  string `json:"role"`
+	Peran  string `json:"peran"`
 }

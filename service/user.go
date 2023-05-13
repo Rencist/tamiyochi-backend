@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
-	"gin-gorm-clean-template/dto"
-	"gin-gorm-clean-template/entity"
-	"gin-gorm-clean-template/helpers"
-	"gin-gorm-clean-template/repository"
+	"tamiyochi-backend/dto"
+	"tamiyochi-backend/entity"
+	"tamiyochi-backend/helpers"
+	"tamiyochi-backend/repository"
 
 	"github.com/google/uuid"
 	"github.com/mashingan/smapping"
@@ -35,7 +35,7 @@ func NewUserService(ur repository.UserRepository) UserService {
 func(us *userService) RegisterUser(ctx context.Context, userDTO dto.UserCreateDto) (entity.User, error) {
 	user := entity.User{}
 	err := smapping.FillStruct(&user, smapping.MapFields(userDTO))
-	user.Role = "user"
+	user.Peran = "user"
 	if err != nil {
 		return user, err
 	}

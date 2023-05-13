@@ -2,8 +2,8 @@ package config
 
 import (
 	"fmt"
-	"gin-gorm-clean-template/entity"
 	"os"
+	"tamiyochi-backend/entity"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -25,6 +25,20 @@ func SetupDatabaseConnection() *gorm.DB {
 
 	if err := db.AutoMigrate(
 		entity.User{},
+		entity.Denda{},
+		entity.Genre{},
+		entity.Kabupaten{},
+		entity.KomentarManga{},
+		entity.Komentar{},
+		entity.Manga{},
+		entity.Peminjaman{},
+		entity.Penerbit{},
+		entity.PenulisSeri{},
+		entity.Penulis{},
+		entity.Provinsi{},
+		entity.SeriGenre{},
+		entity.Seri{},
+		entity.UserKomentar{},
 	); err != nil {
 		fmt.Println(err)
 		panic(err)

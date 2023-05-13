@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"gin-gorm-clean-template/common"
-	"gin-gorm-clean-template/service"
 	"net/http"
 	"strings"
+	"tamiyochi-backend/common"
+	"tamiyochi-backend/service"
 
 	"github.com/gin-gonic/gin"
 )

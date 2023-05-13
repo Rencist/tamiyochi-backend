@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"gin-gorm-clean-template/helpers"
+	"tamiyochi-backend/helpers"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -9,11 +9,15 @@ import (
 
 type User struct {
 	ID        	uuid.UUID   `gorm:"primary_key;not_null" json:"id"`
-	Name 		string 		`json:"name"`
+	Nama 		string 		`json:"nama"`
 	Email 		string 		`json:"email" binding:"email"`
 	NoTelp 		string 		`json:"no_telp"`
 	Password 	string  	`json:"password"`
-	Role		string		`json:"role"`
+	Alamat		string		`json:"alamat"`
+	Peran		string		`json:"peran"`
+
+	KabupatenID	uuid.UUID	`gorm:"foreignKey" json:"kabupaten_id"`
+	Kabupaten   *Kabupaten  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"kabupaten,omitempty"`
 	
 	Timestamp
 }

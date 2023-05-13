@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"gin-gorm-clean-template/controller"
-	"gin-gorm-clean-template/middleware"
-	"gin-gorm-clean-template/service"
+	"tamiyochi-backend/controller"
+	"tamiyochi-backend/middleware"
+	"tamiyochi-backend/service"
 
 	"github.com/gin-gonic/gin"
 )

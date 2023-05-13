@@ -1,8 +1,8 @@
 package common
 
 import (
-	"gin-gorm-clean-template/entity"
 	"math"
+	"tamiyochi-backend/entity"
 
 	"gorm.io/gorm"
 )
