@@ -10,6 +10,9 @@ type UserCreateDto struct {
 	Email 		string 		`json:"email" form:"email" binding:"required"`
 	NoTelp 		string 		`json:"no_telp" form:"no_telp" binding:"required"`
 	Password 	string  	`json:"password" form:"password" binding:"required"`
+	Alamat 		string  	`json:"alamat" form:"alamat" binding:"required"`
+
+	KabupatenID string   	`gorm:"foreignKey" json:"kabupaten_id" form:"kabupaten_id" binding:"required"`
 }
 
 type UserUpdateDto struct {
@@ -18,6 +21,9 @@ type UserUpdateDto struct {
 	Email 		string 		`json:"email" form:"email"`
 	NoTelp 		string 		`json:"no_telp" form:"no_telp"`
 	Password 	string  	`json:"password" form:"password"`
+	Alamat 		string  	`json:"alamat" form:"alamat"`
+
+	KabupatenID string   	`gorm:"foreignKey" json:"kabupaten_id" form:"kabupaten_id" binding:"required"`
 }
 
 type UserLoginDTO struct {

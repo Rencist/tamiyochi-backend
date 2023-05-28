@@ -14,5 +14,7 @@ type Seri struct {
 	PenerbitID 		uuid.UUID   `gorm:"foreignKey" json:"penerbit_id"`
 	Penerbit   		*Penerbit 	`gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"penerbit,omitempty"`
 
+	Mangas 			[]Manga 	`gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"manga,omitempty"`
+
 	Timestamp
 }

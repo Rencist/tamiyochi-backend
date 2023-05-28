@@ -29,12 +29,18 @@ func main() {
 		jwtService service.JWTService = service.NewJWTService()
 
 		userRepository repository.UserRepository = repository.NewUserRepository(db)
+		seriRepository repository.SeriRepository = repository.NewSeriRepository(db)
+
 		userService service.UserService = service.NewUserService(userRepository)
+		seriServiec service.SeriService = service.NewSeriService(seriRepository)
+
 		userController controller.UserController = controller.NewUserController(userService, jwtService)
+		seriController controller.SeriController = controller.NewSeriController(seriServiec)
 	)
 
 	server := gin.Default()
 	routes.UserRoutes(server, userController, jwtService)
+	routes.SeriRoutes(server, seriController, jwtService)
 
 	port := os.Getenv("PORT")
 	if port == "" {
