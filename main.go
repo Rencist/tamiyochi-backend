@@ -30,17 +30,25 @@ func main() {
 
 		userRepository repository.UserRepository = repository.NewUserRepository(db)
 		seriRepository repository.SeriRepository = repository.NewSeriRepository(db)
+		provinsiRepository repository.ProvinsiRepository = repository.NewProvinsiRepository(db)
+		kabupatenRepository repository.KabupatenRepository = repository.NewKabupatenRepository(db)
 
 		userService service.UserService = service.NewUserService(userRepository)
 		seriServiec service.SeriService = service.NewSeriService(seriRepository)
+		provinsiService service.ProvinsiService = service.NewProvinsiService(provinsiRepository)
+		kabupatenService service.KabupatenService = service.NewKabupatenService(kabupatenRepository)
 
 		userController controller.UserController = controller.NewUserController(userService, jwtService)
 		seriController controller.SeriController = controller.NewSeriController(seriServiec)
+		provinsiController controller.ProvinsiController = controller.NewProvinsiController(provinsiService)
+		kabupatenController controller.KabupatenController = controller.NewKabupatenController(kabupatenService)
 	)
 
 	server := gin.Default()
 	routes.UserRoutes(server, userController, jwtService)
 	routes.SeriRoutes(server, seriController, jwtService)
+	routes.ProvinsiRoutes(server, provinsiController, jwtService)
+	routes.KabupatenRoutes(server, kabupatenController, jwtService)
 
 	port := os.Getenv("PORT")
 	if port == "" {
