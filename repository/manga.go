@@ -27,7 +27,6 @@ func NewMangaRepository(db *gorm.DB) MangaRepository {
 }
 
 func(db *mangaConnection) CreateManga(ctx context.Context, manga entity.Manga) (entity.Manga, error) {
-	manga.ID = uuid.New()
 	uc := db.connection.Create(&manga)
 	if uc.Error != nil {
 		return entity.Manga{}, uc.Error

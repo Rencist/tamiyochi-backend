@@ -27,7 +27,6 @@ func NewSeriRepository(db *gorm.DB) SeriRepository {
 }
 
 func(db *seriConnection) CreateSeri(ctx context.Context, seri entity.Seri) (entity.Seri, error) {
-	seri.ID = uuid.New()
 	uc := db.connection.Create(&seri)
 	if uc.Error != nil {
 		return entity.Seri{}, uc.Error
