@@ -12,7 +12,7 @@ import (
 
 type SeriService interface {
 	CreateSeri(ctx context.Context, seriDTO dto.SeriCreateDTO) (entity.Seri, error)
-	GetAllSeri(ctx context.Context) ([]entity.Seri, error)
+	GetAllSeri(ctx context.Context) ([]dto.SeriResponseDTO, error)
 	DeleteSeri(ctx context.Context, seriID uuid.UUID) (error)
 	UpdateSeri(ctx context.Context, seriDTO dto.SeriUpdateDTO) (error)
 }
@@ -36,7 +36,7 @@ func(us *seriService) CreateSeri(ctx context.Context, seriDTO dto.SeriCreateDTO)
 	return us.seriRepository.CreateSeri(ctx, seri)
 }
 
-func(us *seriService) GetAllSeri(ctx context.Context) ([]entity.Seri, error) {
+func(us *seriService) GetAllSeri(ctx context.Context) ([]dto.SeriResponseDTO, error) {
 	return us.seriRepository.GetAllSeri(ctx)
 }
 

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 	"tamiyochi-backend/common"
 	"tamiyochi-backend/dto"
 	"tamiyochi-backend/service"
@@ -72,7 +73,7 @@ func(uc *seriController) DeleteSeri(ctx *gin.Context) {
 }
 
 func(uc *seriController) UpdateSeri(ctx *gin.Context) {
-	seriID, err := uuid.Parse(ctx.Param("id"))
+	seriID, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		res := common.BuildErrorResponse("Gagal Mengupdate Seri", err.Error(), common.EmptyObj{})
 		ctx.JSON(http.StatusBadRequest, res)

@@ -12,7 +12,9 @@ type Seri struct {
 	PenerbitID   int       `gorm:"foreignKey" json:"penerbit_id"`
 	Penerbit     *Penerbit `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"penerbit,omitempty"`
 
-	Mangas []Manga `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"manga,omitempty"`
+	Mangas      []Manga       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"manga,omitempty"`
+	SeriGenre   []SeriGenre   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"seri_genre,omitempty"`
+	PenulisSeri []PenulisSeri `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"penulis_seri,omitempty"`
 
 	Timestamp
 }
