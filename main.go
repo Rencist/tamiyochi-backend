@@ -6,6 +6,7 @@ import (
 	"tamiyochi-backend/common"
 	"tamiyochi-backend/config"
 	"tamiyochi-backend/controller"
+	"tamiyochi-backend/middleware"
 	"tamiyochi-backend/repository"
 	"tamiyochi-backend/routes"
 	"tamiyochi-backend/service"
@@ -45,6 +46,8 @@ func main() {
 	)
 
 	server := gin.Default()
+	server.Use(middleware.CORSMiddleware())
+	
 	routes.UserRoutes(server, userController, jwtService)
 	routes.SeriRoutes(server, seriController, jwtService)
 	routes.ProvinsiRoutes(server, provinsiController, jwtService)
