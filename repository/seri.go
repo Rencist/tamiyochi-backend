@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"tamiyochi-backend/common"
 	"tamiyochi-backend/dto"
 	"tamiyochi-backend/entity"
 
@@ -10,8 +11,9 @@ import (
 )
 
 type SeriRepository interface {
+	GetTotalData(ctx context.Context) (int64, error)
 	CreateSeri(ctx context.Context, seri entity.Seri) (entity.Seri, error)
-	GetAllSeri(ctx context.Context) ([]dto.SeriResponseDTO, error)
+	GetAllSeri(ctx context.Context, pagination entity.Pagination) (dto.PaginationResponse, error)
 	FindSeriByID(ctx context.Context, seriID uuid.UUID) (entity.Seri, error)
 	DeleteSeri(ctx context.Context, seriID uuid.UUID) (error)
 	UpdateSeri(ctx context.Context, seri entity.Seri) (error)
@@ -27,6 +29,15 @@ func NewSeriRepository(db *gorm.DB) SeriRepository {
 	}
 }
 
+func (db *seriConnection) GetTotalData(ctx context.Context) (int64, error) {
+	var totalData int64
+	bc := db.connection.Model(&entity.Seri{}).Count(&totalData)
+	if bc.Error != nil {
+		return 0, bc.Error
+	}
+	return totalData, nil
+}
+
 func(db *seriConnection) CreateSeri(ctx context.Context, seri entity.Seri) (entity.Seri, error) {
 	uc := db.connection.Create(&seri)
 	if uc.Error != nil {
@@ -35,11 +46,12 @@ func(db *seriConnection) CreateSeri(ctx context.Context, seri entity.Seri) (enti
 	return seri, nil
 }
 
-func(db *seriConnection) GetAllSeri(ctx context.Context) ([]dto.SeriResponseDTO, error) {
+func(db *seriConnection) GetAllSeri(ctx context.Context, pagination entity.Pagination) (dto.PaginationResponse, error) {
 	var listSeri []entity.Seri
-	tx := db.connection.Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri").Find(&listSeri)
+	totalData, _ := db.GetTotalData(ctx)
+	tx := db.connection.Debug().Scopes(common.Pagination(&pagination, totalData)).Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri").Order("total_pembaca desc").Find(&listSeri)
 	if tx.Error != nil {
-		return nil, tx.Error
+		return dto.PaginationResponse{}, tx.Error
 	}
 	var listSeriDTO dto.SeriResponseDTO
 	var listSeriDTOArray []dto.SeriResponseDTO
@@ -69,7 +81,18 @@ func(db *seriConnection) GetAllSeri(ctx context.Context) ([]dto.SeriResponseDTO,
 		listSeriDTOArray = append(listSeriDTOArray, listSeriDTO)
 	}
 
-	return listSeriDTOArray, nil
+	meta := dto.Meta{
+		Page: pagination.Page,
+		PerPage: pagination.PerPage,
+		MaxPage: pagination.MaxPage,
+		TotalData: totalData,
+	}
+	paginationResponse := dto.PaginationResponse{
+		DataPerPage: listSeriDTOArray,
+		Meta: meta,
+		
+	}
+	return paginationResponse, nil
 }
 
 func(db *seriConnection) FindSeriByID(ctx context.Context, seriID uuid.UUID) (entity.Seri, error) {

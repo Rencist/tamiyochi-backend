@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"tamiyochi-backend/common"
 	"tamiyochi-backend/dto"
+	"tamiyochi-backend/entity"
 	"tamiyochi-backend/service"
 
 	"github.com/gin-gonic/gin"
@@ -44,7 +45,20 @@ func(uc *seriController) CreateSeri(ctx *gin.Context) {
 }
 
 func(uc *seriController) GetAllSeri(ctx *gin.Context) {
-	result, err := uc.seriService.GetAllSeri(ctx.Request.Context())
+	var pagination entity.Pagination
+	page, _ := strconv.Atoi(ctx.Query("page"))
+	if page <= 0 {
+		page = 1
+	}
+	pagination.Page = page
+
+	perPage, _ := strconv.Atoi(ctx.Query("per_page"))
+	if perPage <= 0 {
+		perPage = 5
+	}
+	pagination.PerPage = perPage
+	
+	result, err := uc.seriService.GetAllSeri(ctx.Request.Context(), pagination)
 	if err != nil {
 		res := common.BuildErrorResponse("Gagal Mendapatkan List Seri", err.Error(), common.EmptyObj{})
 		ctx.JSON(http.StatusBadRequest, res)
