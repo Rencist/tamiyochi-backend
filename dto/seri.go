@@ -36,6 +36,7 @@ type SeriResponseDTO struct {
 	Skor 			string    `json:"skor" form:"skor"`
 	TotalPenilai 	string    `json:"total_penilai" form:"total_penilai"`
 	TotalPembaca 	string    `json:"total_pembaca" form:"total_pembaca"`
+	Foto         	string    `json:"foto" form:"total_penilai"`
 
 	PenerbitID 		int   `gorm:"foreignKey" json:"penerbit_id" form:"penerbit_id"`
 

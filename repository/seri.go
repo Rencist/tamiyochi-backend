@@ -64,6 +64,7 @@ func(db *seriConnection) GetAllSeri(ctx context.Context, pagination entity.Pagin
 		listSeriDTO.TotalPenilai = res.TotalPenilai
 		listSeriDTO.TotalPembaca = res.TotalPembaca
 		listSeriDTO.PenerbitID = res.PenerbitID
+		listSeriDTO.Foto = res.Foto
 		for _, res := range res.Mangas {
 			listSeriDTO.Manga = append(listSeriDTO.Manga, res)
 		}
