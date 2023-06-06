@@ -16,7 +16,7 @@ type User struct {
 	Alamat		string		`json:"alamat"`
 	Peran		string		`json:"peran"`
 
-	KabupatenID	string		`gorm:"foreignKey" json:"kabupaten_id"`
+	KabupatenID	int		`gorm:"foreignKey" json:"kabupaten_id"`
 	Kabupaten   *Kabupaten  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"kabupaten,omitempty"`
 	
 	Timestamp

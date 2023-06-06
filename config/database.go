@@ -28,7 +28,6 @@ func SetupDatabaseConnection() *gorm.DB {
 		entity.Denda{},
 		entity.Genre{},
 		entity.Kabupaten{},
-		entity.KomentarManga{},
 		entity.Komentar{},
 		entity.Manga{},
 		entity.Peminjaman{},
@@ -38,7 +37,6 @@ func SetupDatabaseConnection() *gorm.DB {
 		entity.Provinsi{},
 		entity.SeriGenre{},
 		entity.Seri{},
-		entity.UserKomentar{},
 	); err != nil {
 		fmt.Println(err)
 		panic(err)
