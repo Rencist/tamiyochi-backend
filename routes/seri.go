@@ -13,6 +13,7 @@ func SeriRoutes(router *gin.Engine, SeriController controller.SeriController, jw
 	{
 		seriRoutes.POST("", middleware.Authenticate(jwtService), SeriController.CreateSeri)
 		seriRoutes.GET("", SeriController.GetAllSeri)
+		seriRoutes.GET("/:id", SeriController.FindSeriByID)
 		seriRoutes.DELETE("/", middleware.Authenticate(jwtService), SeriController.DeleteSeri)
 		seriRoutes.PUT("/", middleware.Authenticate(jwtService), SeriController.UpdateSeri)
 	}

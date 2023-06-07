@@ -6,7 +6,6 @@ import (
 	"tamiyochi-backend/dto"
 	"tamiyochi-backend/entity"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -14,8 +13,8 @@ type SeriRepository interface {
 	GetTotalData(ctx context.Context) (int64, error)
 	CreateSeri(ctx context.Context, seri entity.Seri) (entity.Seri, error)
 	GetAllSeri(ctx context.Context, pagination entity.Pagination) (dto.PaginationResponse, error)
-	FindSeriByID(ctx context.Context, seriID uuid.UUID) (entity.Seri, error)
-	DeleteSeri(ctx context.Context, seriID uuid.UUID) (error)
+	FindSeriByID(ctx context.Context, seriID int) (dto.SeriResponseDTO, error)
+	DeleteSeri(ctx context.Context, seriID int) (error)
 	UpdateSeri(ctx context.Context, seri entity.Seri) (error)
 }
 
@@ -91,21 +90,43 @@ func(db *seriConnection) GetAllSeri(ctx context.Context, pagination entity.Pagin
 	paginationResponse := dto.PaginationResponse{
 		DataPerPage: listSeriDTOArray,
 		Meta: meta,
-		
 	}
 	return paginationResponse, nil
 }
 
-func(db *seriConnection) FindSeriByID(ctx context.Context, seriID uuid.UUID) (entity.Seri, error) {
+func(db *seriConnection) FindSeriByID(ctx context.Context, seriID int) (dto.SeriResponseDTO, error) {
 	var seri entity.Seri
-	ux := db.connection.Where("id = ?", seriID).Take(&seri)
-	if ux.Error != nil {
-		return seri, ux.Error
+	ux := db.connection.Where("id = ?", seriID).Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri").Take(&seri)
+	var seriDTO dto.SeriResponseDTO
+	seriDTO.ID = seri.ID
+	seriDTO.Judul = seri.Judul
+	seriDTO.Sinopsis = seri.Sinopsis
+	seriDTO.TahunTerbit = seri.TahunTerbit
+	seriDTO.Skor = seri.Skor
+	seriDTO.TotalPenilai = seri.TotalPenilai
+	seriDTO.TotalPembaca = seri.TotalPembaca
+	seriDTO.PenerbitID = seri.PenerbitID
+	seriDTO.Foto = seri.Foto
+	for _, res := range seri.Mangas {
+		seriDTO.Manga = append(seriDTO.Manga, res)
 	}
-	return seri, nil
+	for _, res := range seri.PenulisSeri {
+		var penulis entity.Penulis
+		db.connection.Where("id = ?", res.PenulisID).Take(&penulis)
+		seriDTO.Penulis = append(seriDTO.Penulis, penulis)
+	}
+	for _, res := range seri.SeriGenre {
+		var genre entity.Genre
+		db.connection.Where("id = ?", res.GenreID).Take(&genre)
+		seriDTO.Genre = append(seriDTO.Genre, genre)
+	}
+	if ux.Error != nil {
+		return seriDTO, ux.Error
+	}
+	return seriDTO, nil
 }
 
-func(db *seriConnection) DeleteSeri(ctx context.Context, seriID uuid.UUID) (error) {
+func(db *seriConnection) DeleteSeri(ctx context.Context, seriID int) (error) {
 	uc := db.connection.Delete(&entity.Seri{}, &seriID)
 	if uc.Error != nil {
 		return uc.Error

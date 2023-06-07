@@ -6,15 +6,15 @@ import (
 	"tamiyochi-backend/entity"
 	"tamiyochi-backend/repository"
 
-	"github.com/google/uuid"
 	"github.com/mashingan/smapping"
 )
 
 type SeriService interface {
 	CreateSeri(ctx context.Context, seriDTO dto.SeriCreateDTO) (entity.Seri, error)
 	GetAllSeri(ctx context.Context, pagination entity.Pagination) (dto.PaginationResponse, error)
-	DeleteSeri(ctx context.Context, seriID uuid.UUID) (error)
+	DeleteSeri(ctx context.Context, seriID int) (error)
 	UpdateSeri(ctx context.Context, seriDTO dto.SeriUpdateDTO) (error)
+	FindSeriByID(ctx context.Context, seriID int) (dto.SeriResponseDTO, error)
 }
 
 type seriService struct {
@@ -40,7 +40,7 @@ func(us *seriService) GetAllSeri(ctx context.Context, pagination entity.Paginati
 	return us.seriRepository.GetAllSeri(ctx, pagination)
 }
 
-func(us *seriService) DeleteSeri(ctx context.Context, seriID uuid.UUID) (error) {
+func(us *seriService) DeleteSeri(ctx context.Context, seriID int) (error) {
 	return us.seriRepository.DeleteSeri(ctx, seriID)
 }
 
@@ -51,4 +51,8 @@ func(us *seriService) UpdateSeri(ctx context.Context, seriDTO dto.SeriUpdateDTO)
 		return err
 	}
 	return us.seriRepository.UpdateSeri(ctx, seri)
+}
+
+func(us *seriService) FindSeriByID(ctx context.Context, seriID int) (dto.SeriResponseDTO, error) {
+	return us.seriRepository.FindSeriByID(ctx, seriID)
 }

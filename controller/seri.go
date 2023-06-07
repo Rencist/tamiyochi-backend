@@ -9,7 +9,6 @@ import (
 	"tamiyochi-backend/service"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type SeriController interface {
@@ -17,6 +16,7 @@ type SeriController interface {
 	GetAllSeri(ctx *gin.Context)
 	DeleteSeri(ctx *gin.Context)
 	UpdateSeri(ctx *gin.Context)
+	FindSeriByID(ctx *gin.Context)
 }
 
 type seriController struct {
@@ -70,7 +70,7 @@ func(uc *seriController) GetAllSeri(ctx *gin.Context) {
 }
 
 func(uc *seriController) DeleteSeri(ctx *gin.Context) {
-	seriID, err := uuid.Parse(ctx.Param("id"))
+	seriID, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		res := common.BuildErrorResponse("Gagal Menghapus Seri", err.Error(), common.EmptyObj{})
 		ctx.JSON(http.StatusBadRequest, res)
@@ -109,5 +109,23 @@ func(uc *seriController) UpdateSeri(ctx *gin.Context) {
 		return
 	}
 	res := common.BuildResponse(true, "Berhasil Mengupdate Seri", common.EmptyObj{})
+	ctx.JSON(http.StatusOK, res)
+}
+
+func(uc *seriController) FindSeriByID(ctx *gin.Context) {
+	seriID, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		res := common.BuildErrorResponse("Gagal Mendapatkan Detail Seri", err.Error(), common.EmptyObj{})
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	result, err := uc.seriService.FindSeriByID(ctx.Request.Context(), seriID)
+	if err != nil {
+		res := common.BuildErrorResponse("Gagal Mendapatkan Detail Seri", err.Error(), common.EmptyObj{})
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+	res := common.BuildResponse(true, "Berhasil Mendapatkan Detail Seri", result)
 	ctx.JSON(http.StatusOK, res)
 }
