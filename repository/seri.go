@@ -52,9 +52,9 @@ func(db *seriConnection) GetAllSeri(ctx context.Context, pagination entity.Pagin
 	if tx.Error != nil {
 		return dto.PaginationResponse{}, tx.Error
 	}
-	var listSeriDTO dto.SeriResponseDTO
 	var listSeriDTOArray []dto.SeriResponseDTO
 	for _, res := range listSeri {
+		var listSeriDTO dto.SeriResponseDTO
 		listSeriDTO.ID = res.ID
 		listSeriDTO.Judul = res.Judul
 		listSeriDTO.Sinopsis = res.Sinopsis
