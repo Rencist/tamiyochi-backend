@@ -38,6 +38,7 @@ func SetupDatabaseConnection() *gorm.DB {
 		entity.SeriGenre{},
 		entity.Seri{},
 		entity.Cart{},
+		entity.Rating{},
 	); err != nil {
 		fmt.Println(err)
 		panic(err)

@@ -44,7 +44,7 @@ func main() {
 		cartService service.CartService = service.NewCartService(cartRepository)
 
 		userController controller.UserController = controller.NewUserController(userService, jwtService)
-		seriController controller.SeriController = controller.NewSeriController(seriServiec)
+		seriController controller.SeriController = controller.NewSeriController(seriServiec, jwtService)
 		provinsiController controller.ProvinsiController = controller.NewProvinsiController(provinsiService)
 		kabupatenController controller.KabupatenController = controller.NewKabupatenController(kabupatenService)
 		komentarController controller.KomentarController = controller.NewKomentarController(komentarService, jwtService)
@@ -56,8 +56,8 @@ func main() {
 	
 	routes.UserRoutes(server, userController, jwtService)
 	routes.SeriRoutes(server, seriController, jwtService)
-	routes.ProvinsiRoutes(server, provinsiController, jwtService)
-	routes.KabupatenRoutes(server, kabupatenController, jwtService)
+	routes.ProvinsiRoutes(server, provinsiController)
+	routes.KabupatenRoutes(server, kabupatenController)
 	routes.KomentarRoutes(server, komentarController, jwtService)
 	routes.CartRoutes(server, cartController, jwtService)
 

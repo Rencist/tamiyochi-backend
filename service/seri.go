@@ -6,6 +6,7 @@ import (
 	"tamiyochi-backend/entity"
 	"tamiyochi-backend/repository"
 
+	"github.com/google/uuid"
 	"github.com/mashingan/smapping"
 )
 
@@ -15,6 +16,7 @@ type SeriService interface {
 	DeleteSeri(ctx context.Context, seriID int) (error)
 	UpdateSeri(ctx context.Context, seriDTO dto.SeriUpdateDTO) (error)
 	FindSeriByID(ctx context.Context, seriID int) (dto.SeriResponseDTO, error)
+	UpsertRating(ctx context.Context, seriID int, rating float32, userID uuid.UUID) (error)
 }
 
 type seriService struct {
@@ -55,4 +57,13 @@ func(us *seriService) UpdateSeri(ctx context.Context, seriDTO dto.SeriUpdateDTO)
 
 func(us *seriService) FindSeriByID(ctx context.Context, seriID int) (dto.SeriResponseDTO, error) {
 	return us.seriRepository.FindSeriByID(ctx, seriID)
+}
+
+func(us *seriService) UpsertRating(ctx context.Context, seriID int, rating float32, userID uuid.UUID) (error) {
+	checkUserRating, _ := us.seriRepository.CheckRatingUser(ctx, seriID, userID)
+	
+	if checkUserRating {
+		return us.seriRepository.UpdateRating(ctx, seriID, rating, userID)	
+	} 
+	return us.seriRepository.AddRating(ctx, seriID, rating, userID)	
 }

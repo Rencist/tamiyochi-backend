@@ -2,12 +2,11 @@ package routes
 
 import (
 	"tamiyochi-backend/controller"
-	"tamiyochi-backend/service"
 
 	"github.com/gin-gonic/gin"
 )
 
-func KabupatenRoutes(router *gin.Engine, KabupatenController controller.KabupatenController, jwtService service.JWTService) {
+func KabupatenRoutes(router *gin.Engine, KabupatenController controller.KabupatenController) {
 	kabupatenRoutes := router.Group("/api/kabupaten")
 	{
 		kabupatenRoutes.GET("", KabupatenController.GetAllKabupaten)

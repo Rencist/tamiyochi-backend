@@ -17,6 +17,7 @@ type SeriController interface {
 	DeleteSeri(ctx *gin.Context)
 	UpdateSeri(ctx *gin.Context)
 	FindSeriByID(ctx *gin.Context)
+	UpsertRating(ctx *gin.Context)
 }
 
 type seriController struct {
@@ -24,9 +25,10 @@ type seriController struct {
 	seriService service.SeriService
 }
 
-func NewSeriController(us service.SeriService) SeriController {
+func NewSeriController(us service.SeriService, js service.JWTService) SeriController {
 	return &seriController{
 		seriService: us,
+		jwtService:js,
 	}
 }
 
@@ -127,5 +129,33 @@ func(uc *seriController) FindSeriByID(ctx *gin.Context) {
 		return
 	}
 	res := common.BuildResponse(true, "Berhasil Mendapatkan Detail Seri", result)
+	ctx.JSON(http.StatusOK, res)
+}
+
+func(uc *seriController) UpsertRating(ctx *gin.Context) {
+	token := ctx.MustGet("token").(string)
+	userID, err := uc.jwtService.GetUserIDByToken(token)
+	if err != nil {
+		response := common.BuildErrorResponse("Gagal Memproses Request", "Token Tidak Valid", nil)
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
+		return
+	}
+
+	var rating dto.RatingCreateDTO
+	err = ctx.ShouldBind(&rating)
+	if err != nil {
+		res := common.BuildErrorResponse("Gagal Memberi Rating Seri", err.Error(), common.EmptyObj{})
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	err = uc.seriService.UpsertRating(ctx.Request.Context(), rating.SeriID, rating.Rating, userID)
+	if err != nil {
+		res := common.BuildErrorResponse("Gagal Memberi Rating Seri", err.Error(), common.EmptyObj{})
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	res := common.BuildResponse(true, "Berhasil Memberi Rating Seri", common.EmptyObj{})
 	ctx.JSON(http.StatusOK, res)
 }

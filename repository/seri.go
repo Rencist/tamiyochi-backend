@@ -6,6 +6,7 @@ import (
 	"tamiyochi-backend/dto"
 	"tamiyochi-backend/entity"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -16,6 +17,9 @@ type SeriRepository interface {
 	FindSeriByID(ctx context.Context, seriID int) (dto.SeriResponseDTO, error)
 	DeleteSeri(ctx context.Context, seriID int) (error)
 	UpdateSeri(ctx context.Context, seri entity.Seri) (error)
+	AddRating(ctx context.Context, seriID int, rating float32, userID uuid.UUID) (error)
+	CheckRatingUser(ctx context.Context, seriID int, userID uuid.UUID) (bool, error)
+	UpdateRating(ctx context.Context, seriID int, rating float32, userID uuid.UUID) (error)
 }
 
 type seriConnection struct {
@@ -142,6 +146,62 @@ func(db *seriConnection) DeleteSeri(ctx context.Context, seriID int) (error) {
 
 func(db *seriConnection) UpdateSeri(ctx context.Context, seri entity.Seri) (error) {
 	uc := db.connection.Updates(&seri)
+	if uc.Error != nil {
+		return uc.Error
+	}
+	return nil
+}
+
+func(db *seriConnection) AddRating(ctx context.Context, seriID int, rating float32, userID uuid.UUID) (error) {
+	uc := db.connection.Model(&entity.Seri{}).Where("id = ?", seriID).Update("total_penilai", gorm.Expr("total_penilai + 1"))
+	if uc.Error != nil {
+		return uc.Error
+	}
+	uc = db.connection.Model(&entity.Seri{}).Where("id = ?", seriID).Update("skor", gorm.Expr("round((((total_penilai - 1) * skor) + ?) / total_penilai, 2)", rating))
+	if uc.Error != nil {
+		return uc.Error
+	}
+
+	ratingID := uuid.New()
+	entityRating := entity.Rating{
+		ID: ratingID,
+		Rating: rating,
+		SeriID: seriID,
+		UserID: userID,
+	}
+	uc = db.connection.Create(&entityRating)
+	if uc.Error != nil {
+		return uc.Error
+	}
+	return nil
+}
+
+func(db *seriConnection) CheckRatingUser(ctx context.Context, seriID int, userID uuid.UUID) (bool, error) {
+	var rating entity.Rating
+	uc := db.connection.Where("seri_id = ? AND user_id = ?", seriID, userID).Take(&rating)
+	if uc.Error != nil {
+		return false, uc.Error
+	}
+	if rating.ID != uuid.Nil {
+		return true, nil
+	}
+	return false, nil
+}
+
+func(db *seriConnection) UpdateRating(ctx context.Context, seriID int, rating float32, userID uuid.UUID) (error) {
+	var entityRating entity.Rating
+	uc := db.connection.Where("seri_id = ? AND user_id = ?", seriID, userID).Take(&entityRating)
+	if uc.Error != nil {
+		return uc.Error
+	}
+
+	newRating := entityRating.Rating - rating
+	uc = db.connection.Model(&entity.Seri{}).Where("id = ?", seriID).Update("skor", gorm.Expr("round(((skor * total_penilai) + ?) / total_penilai, 2)", newRating))
+	if uc.Error != nil {
+		return uc.Error
+	}
+
+	uc = db.connection.Model(&entity.Rating{}).Where("seri_id = ? AND user_id = ?", seriID, userID).Update("rating", rating)
 	if uc.Error != nil {
 		return uc.Error
 	}
