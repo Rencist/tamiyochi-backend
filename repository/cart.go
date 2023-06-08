@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"tamiyochi-backend/dto"
 	"tamiyochi-backend/entity"
 
 	"github.com/google/uuid"
@@ -10,7 +11,7 @@ import (
 
 type CartRepository interface {
 	CreateCart(ctx context.Context, cart entity.Cart) (entity.Cart, error)
-	FindCartByUserID(ctx context.Context, userID uuid.UUID) ([]entity.Cart, error)
+	FindCartByUserID(ctx context.Context, userID uuid.UUID) (dto.CartResponse, error)
 	DeleteCart(ctx context.Context, cartID uuid.UUID) (error)
 	DeleteAllByMangaIDCart(ctx context.Context, mangaID int) (error)
 }
@@ -35,13 +36,48 @@ func(db *cartConnection) CreateCart(ctx context.Context, cart entity.Cart) (enti
 	return cart, nil
 }
 
-func(db *cartConnection) FindCartByUserID(ctx context.Context, userID uuid.UUID) ([]entity.Cart, error) {
+func(db *cartConnection) FindCartByUserID(ctx context.Context, userID uuid.UUID) (dto.CartResponse, error) {
+	var jumlahMangaCart dto.JumlahMangaCart
 	var cart []entity.Cart
-	ux := db.connection.Where("user_id = ?", userID).Find(&cart)
-	if ux.Error != nil {
-		return nil, ux.Error
+	
+	var cartResponseDTO dto.CartResponse
+	var cartDTO dto.Cart
+	totalHarga := 0
+	totalManga := 0
+	ux := db.connection.Select("count(1) as jumlah_penyewa, manga_id").Group("manga_id").Find(&cart)
+	for _, res := range cart {
+		jumlahMangaCart.JumlahPenyewa = res.JumlahPenyewa
+		jumlahMangaCart.MangaID = res.MangaID
+
+		manga := entity.Manga{}
+		ux := db.connection.Where("id = ?", res.MangaID).Find(&manga)
+		if ux.Error != nil {
+			return dto.CartResponse{}, ux.Error
+		}
+		seri := entity.Seri{}
+		ux = db.connection.Where("id = ?", manga.SeriID).Find(&seri)
+		if ux.Error != nil {
+			return dto.CartResponse{}, ux.Error
+		}
+
+		cartDTO.JumlahTersedia = manga.JumlahTersedia
+		cartDTO.HargaSewa = manga.HargaSewa
+		cartDTO.Volume = manga.Volume
+		cartDTO.Foto = seri.Foto
+		cartDTO.HargaSubTotal = manga.HargaSewa * res.JumlahPenyewa
+		cartDTO.JumlahSewa = res.JumlahPenyewa
+
+		totalHarga += cartDTO.HargaSubTotal
+		totalManga += res.JumlahPenyewa
+		cartResponseDTO.Cart = append(cartResponseDTO.Cart, cartDTO)
 	}
-	return cart, nil
+	cartResponseDTO.TotalHargaSewa = totalHarga
+	cartResponseDTO.TotalPinjaman = totalManga
+
+	if ux.Error != nil {
+		return dto.CartResponse{}, ux.Error
+	}
+	return cartResponseDTO, nil
 }
 
 func(db *cartConnection) DeleteCart(ctx context.Context, cartID uuid.UUID) (error) {
