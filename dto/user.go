@@ -12,7 +12,7 @@ type UserCreateDto struct {
 	Password 	string  	`json:"password" form:"password" binding:"required"`
 	Alamat 		string  	`json:"alamat" form:"alamat" binding:"required"`
 
-	KabupatenID string   	`gorm:"foreignKey" json:"kabupaten_id" form:"kabupaten_id" binding:"required"`
+	KabupatenID int   	`gorm:"foreignKey" json:"kabupaten_id" form:"kabupaten_id" binding:"required"`
 }
 
 type UserUpdateDto struct {
@@ -23,7 +23,7 @@ type UserUpdateDto struct {
 	Password 	string  	`json:"password" form:"password"`
 	Alamat 		string  	`json:"alamat" form:"alamat"`
 
-	KabupatenID string   	`gorm:"foreignKey" json:"kabupaten_id" form:"kabupaten_id" binding:"required"`
+	KabupatenID int   	`gorm:"foreignKey" json:"kabupaten_id" form:"kabupaten_id" binding:"required"`
 }
 
 type UserLoginDTO struct {
