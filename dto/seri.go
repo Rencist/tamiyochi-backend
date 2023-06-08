@@ -9,7 +9,7 @@ type SeriCreateDTO struct {
 	Judul 			string    `json:"judul" form:"judul" binding:"required"`
 	Sinopsis 		string    `json:"sinopsis" form:"sinopsis" binding:"required"`
 	TahunTerbit 	string    `json:"tahun_terbit" form:"tahun_terbit" binding:"required"`
-	Skor 			int    `json:"skor" form:"skor" binding:"required"`
+	Skor 			float32    `json:"skor" form:"skor" binding:"required"`
 	TotalPenilai 	int    `json:"total_penilai" form:"total_penilai" binding:"required"`
 	TotalPembaca 	int    `json:"total_pembaca" form:"total_pembaca" binding:"required"`
 
@@ -21,7 +21,7 @@ type SeriUpdateDTO struct {
 	Judul 			string    `json:"judul" form:"judul"`
 	Sinopsis 		string    `json:"sinopsis" form:"sinopsis"`
 	TahunTerbit 	string    `json:"tahun_terbit" form:"tahun_terbit"`
-	Skor 			int    `json:"skor" form:"skor"`
+	Skor 			float32    `json:"skor" form:"skor"`
 	TotalPenilai 	int    `json:"total_penilai" form:"total_penilai"`
 	TotalPembaca 	int    `json:"total_pembaca" form:"total_pembaca"`
 
@@ -33,7 +33,7 @@ type SeriResponseDTO struct {
 	Judul 			string    `json:"judul" form:"judul"`
 	Sinopsis		string	  `json:"sinopsis" form:"sinopsis"`
 	TahunTerbit 	string    `json:"tahun_terbit" form:"tahun_terbit"`
-	Skor 			int    `json:"skor" form:"skor"`
+	Skor 			float32    `json:"skor" form:"skor"`
 	TotalPenilai 	int    `json:"total_penilai" form:"total_penilai"`
 	TotalPembaca 	int    `json:"total_pembaca" form:"total_pembaca"`
 	Foto         	string    `json:"foto" form:"total_penilai"`

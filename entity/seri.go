@@ -5,7 +5,7 @@ type Seri struct {
 	Judul        string    `json:"judul"`
 	Sinopsis     string    `json:"sinopsis"`
 	TahunTerbit  string    `json:"tahun_terbit"`
-	Skor         int       `json:"skor"`
+	Skor         float32   `json:"skor"`
 	TotalPenilai int       `json:"total_penilai"`
 	TotalPembaca int       `json:"total_pembaca"`
 	Foto         string    `json:"foto"`
