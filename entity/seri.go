@@ -5,9 +5,9 @@ type Seri struct {
 	Judul        string    `json:"judul"`
 	Sinopsis     string    `json:"sinopsis"`
 	TahunTerbit  string    `json:"tahun_terbit"`
-	Skor         string    `json:"skor"`
-	TotalPenilai string    `json:"total_penilai"`
-	TotalPembaca string    `json:"total_pembaca"`
+	Skor         int       `json:"skor"`
+	TotalPenilai int       `json:"total_penilai"`
+	TotalPembaca int       `json:"total_pembaca"`
 	Foto         string    `json:"foto"`
 	PenerbitID   int       `gorm:"foreignKey" json:"penerbit_id"`
 	Penerbit     *Penerbit `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"penerbit,omitempty"`

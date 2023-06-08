@@ -54,6 +54,8 @@ func(db *seriConnection) GetAllSeri(ctx context.Context, pagination entity.Pagin
 	}
 	var listSeriDTOArray []dto.SeriResponseDTO
 	for _, res := range listSeri {
+		var penerbit entity.Penerbit
+		db.connection.Where("id = ?", res.PenerbitID).Take(&penerbit)
 		var listSeriDTO dto.SeriResponseDTO
 		listSeriDTO.ID = res.ID
 		listSeriDTO.Judul = res.Judul
@@ -63,6 +65,7 @@ func(db *seriConnection) GetAllSeri(ctx context.Context, pagination entity.Pagin
 		listSeriDTO.TotalPenilai = res.TotalPenilai
 		listSeriDTO.TotalPembaca = res.TotalPembaca
 		listSeriDTO.PenerbitID = res.PenerbitID
+		listSeriDTO.NamaPenerbit = penerbit.Nama
 		listSeriDTO.Foto = res.Foto
 		for _, res := range res.Mangas {
 			listSeriDTO.Manga = append(listSeriDTO.Manga, res)
@@ -97,6 +100,8 @@ func(db *seriConnection) GetAllSeri(ctx context.Context, pagination entity.Pagin
 func(db *seriConnection) FindSeriByID(ctx context.Context, seriID int) (dto.SeriResponseDTO, error) {
 	var seri entity.Seri
 	ux := db.connection.Where("id = ?", seriID).Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri").Take(&seri)
+	var penerbit entity.Penerbit
+	db.connection.Where("id = ?", seri.PenerbitID).Take(&penerbit)
 	var seriDTO dto.SeriResponseDTO
 	seriDTO.ID = seri.ID
 	seriDTO.Judul = seri.Judul
@@ -106,6 +111,7 @@ func(db *seriConnection) FindSeriByID(ctx context.Context, seriID int) (dto.Seri
 	seriDTO.TotalPenilai = seri.TotalPenilai
 	seriDTO.TotalPembaca = seri.TotalPembaca
 	seriDTO.PenerbitID = seri.PenerbitID
+	seriDTO.NamaPenerbit = penerbit.Nama
 	seriDTO.Foto = seri.Foto
 	for _, res := range seri.Mangas {
 		seriDTO.Manga = append(seriDTO.Manga, res)
