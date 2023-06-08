@@ -13,7 +13,7 @@ import (
 type CartService interface {
 	CreateCart(ctx context.Context, cartDTO dto.CartCreateDTO) (entity.Cart, error)
 	FindCartByUserID(ctx context.Context, userID uuid.UUID) (dto.CartResponse, error)
-	DeleteCart(ctx context.Context, cartID uuid.UUID) (error)
+	DeleteCart(ctx context.Context, mangaID int) (error)
 	DeleteAllByMangaIDCart(ctx context.Context, mangaID int) (error)
 }
 
@@ -46,8 +46,8 @@ func(us *cartService) FindCartByUserID(ctx context.Context, userID uuid.UUID) (d
 	return us.cartRepository.FindCartByUserID(ctx, userID)
 }
 
-func(us *cartService) DeleteCart(ctx context.Context, cartID uuid.UUID) (error) {
-	return us.cartRepository.DeleteCart(ctx, cartID)
+func(us *cartService) DeleteCart(ctx context.Context, mangaID int) (error) {
+	return us.cartRepository.DeleteCart(ctx, mangaID)
 }
 
 func(us *cartService) DeleteAllByMangaIDCart(ctx context.Context, mangaID int) (error) {

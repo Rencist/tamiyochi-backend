@@ -8,7 +8,6 @@ import (
 	"tamiyochi-backend/service"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type CartController interface {
@@ -73,13 +72,13 @@ func(uc *cartController) FindCartByUserID(ctx *gin.Context) {
 }
 
 func(uc *cartController) DeleteCart(ctx *gin.Context) {
-	cartID, err := uuid.Parse(ctx.Param("cart_id"))
+	mangaID, err := strconv.Atoi(ctx.Param("manga_id"))
 	if err != nil {
 		res := common.BuildErrorResponse("Gagal Menghapus Cart", err.Error(), common.EmptyObj{})
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
-	err = uc.cartService.DeleteCart(ctx.Request.Context(), cartID)
+	err = uc.cartService.DeleteCart(ctx.Request.Context(), mangaID)
 	if err != nil {
 		res := common.BuildErrorResponse("Gagal Menghapus Cart", err.Error(), common.EmptyObj{})
 		ctx.JSON(http.StatusBadRequest, res)

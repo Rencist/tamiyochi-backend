@@ -17,6 +17,7 @@ type CartResponse struct {
 }
 
 type Cart struct {
+	MangaID			int			`json:"manga_id"`
 	Foto 			string    	`json:"foto"`
 	JumlahTersedia 	int    		`json:"jumlah_tersedia"`
 	JumlahSewa		int		   	`json:"jumlah_sewa"`

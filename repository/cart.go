@@ -12,7 +12,7 @@ import (
 type CartRepository interface {
 	CreateCart(ctx context.Context, cart entity.Cart) (entity.Cart, error)
 	FindCartByUserID(ctx context.Context, userID uuid.UUID) (dto.CartResponse, error)
-	DeleteCart(ctx context.Context, cartID uuid.UUID) (error)
+	DeleteCart(ctx context.Context, mangaID int) (error)
 	DeleteAllByMangaIDCart(ctx context.Context, mangaID int) (error)
 }
 
@@ -59,7 +59,7 @@ func(db *cartConnection) FindCartByUserID(ctx context.Context, userID uuid.UUID)
 		if ux.Error != nil {
 			return dto.CartResponse{}, ux.Error
 		}
-
+		cartDTO.MangaID = manga.ID
 		cartDTO.JumlahTersedia = manga.JumlahTersedia
 		cartDTO.HargaSewa = manga.HargaSewa
 		cartDTO.Volume = manga.Volume
@@ -81,8 +81,9 @@ func(db *cartConnection) FindCartByUserID(ctx context.Context, userID uuid.UUID)
 	return cartResponseDTO, nil
 }
 
-func(db *cartConnection) DeleteCart(ctx context.Context, cartID uuid.UUID) (error) {
-	uc := db.connection.Delete(&entity.Cart{}, &cartID)
+func(db *cartConnection) DeleteCart(ctx context.Context, mangaID int) (error) {
+	var cart entity.Cart
+	uc := db.connection.Where("manga_id = ?", mangaID).Limit(1).Take(&cart).Delete(&cart)
 	if uc.Error != nil {
 		return uc.Error
 	}
