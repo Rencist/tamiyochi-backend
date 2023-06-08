@@ -66,6 +66,7 @@ func(db *cartConnection) FindCartByUserID(ctx context.Context, userID uuid.UUID)
 		cartDTO.Foto = seri.Foto
 		cartDTO.HargaSubTotal = manga.HargaSewa * res.JumlahPenyewa
 		cartDTO.JumlahSewa = res.JumlahPenyewa
+		cartDTO.JudulSeri = seri.Judul
 
 		totalHarga += cartDTO.HargaSubTotal
 		totalManga += res.JumlahPenyewa

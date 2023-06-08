@@ -23,6 +23,7 @@ type Cart struct {
 	HargaSewa 		int    		`json:"harga_sewa"`
 	Volume			int    		`json:"volume"`	
 	HargaSubTotal	int		  	`json:"harga_sub_total"`
+	JudulSeri		string    	`json:"judul_seri"`
 }
 
 type JumlahMangaCart struct {
