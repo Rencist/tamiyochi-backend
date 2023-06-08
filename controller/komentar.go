@@ -21,9 +21,10 @@ type komentarController struct {
 	komentarService service.KomentarService
 }
 
-func NewKomentarController(us service.KomentarService) KomentarController {
+func NewKomentarController(us service.KomentarService, jwts service.JWTService) KomentarController {
 	return &komentarController{
 		komentarService: us,
+		jwtService: jwts,
 	}
 }
 

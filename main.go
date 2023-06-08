@@ -34,18 +34,21 @@ func main() {
 		provinsiRepository repository.ProvinsiRepository = repository.NewProvinsiRepository(db)
 		kabupatenRepository repository.KabupatenRepository = repository.NewKabupatenRepository(db)
 		komentarRepository repository.KomentarRepository = repository.NewKomentarRepository(db)
+		cartRepository repository.CartRepository = repository.NewCartRepository(db)
 
 		userService service.UserService = service.NewUserService(userRepository)
 		seriServiec service.SeriService = service.NewSeriService(seriRepository)
 		provinsiService service.ProvinsiService = service.NewProvinsiService(provinsiRepository)
 		kabupatenService service.KabupatenService = service.NewKabupatenService(kabupatenRepository)
 		komentarService service.KomentarService = service.NewKomentarService(komentarRepository)
+		cartService service.CartService = service.NewCartService(cartRepository)
 
 		userController controller.UserController = controller.NewUserController(userService, jwtService)
 		seriController controller.SeriController = controller.NewSeriController(seriServiec)
 		provinsiController controller.ProvinsiController = controller.NewProvinsiController(provinsiService)
 		kabupatenController controller.KabupatenController = controller.NewKabupatenController(kabupatenService)
-		komentarController controller.KomentarController = controller.NewKomentarController(komentarService)
+		komentarController controller.KomentarController = controller.NewKomentarController(komentarService, jwtService)
+		cartController controller.CartController = controller.NewCartController(cartService, jwtService)
 	)
 
 	server := gin.Default()
@@ -56,6 +59,7 @@ func main() {
 	routes.ProvinsiRoutes(server, provinsiController, jwtService)
 	routes.KabupatenRoutes(server, kabupatenController, jwtService)
 	routes.KomentarRoutes(server, komentarController, jwtService)
+	routes.CartRoutes(server, cartController, jwtService)
 
 	port := os.Getenv("PORT")
 	if port == "" {
