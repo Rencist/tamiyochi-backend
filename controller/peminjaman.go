@@ -50,7 +50,15 @@ func(uc *peminjamanController) CreatePeminjaman(ctx *gin.Context) {
 }
 
 func(uc *peminjamanController) GetAllPeminjamanUser(ctx *gin.Context) {
-	result, err := uc.peminjamanService.GetAllPeminjamanUser(ctx.Request.Context())
+	token := ctx.MustGet("token").(string)
+	userID, err := uc.jwtService.GetUserIDByToken(token)
+	if err != nil {
+		response := common.BuildErrorResponse("Gagal Memproses Request", "Token Tidak Valid", nil)
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
+		return
+	}
+
+	result, err := uc.peminjamanService.GetAllPeminjamanUser(ctx.Request.Context(), userID)
 	if err != nil {
 		res := common.BuildErrorResponse("Gagal Mendapatkan List Peminjaman", err.Error(), common.EmptyObj{})
 		ctx.JSON(http.StatusBadRequest, res)

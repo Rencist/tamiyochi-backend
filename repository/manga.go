@@ -11,7 +11,7 @@ import (
 type MangaRepository interface {
 	CreateManga(ctx context.Context, manga entity.Manga) (entity.Manga, error)
 	GetAllManga(ctx context.Context) ([]entity.Manga, error)
-	FindMangaByID(ctx context.Context, mangaID uuid.UUID) (entity.Manga, error)
+	FindMangaByID(ctx context.Context, mangaID int) (entity.Manga, error)
 	DeleteManga(ctx context.Context, mangaID uuid.UUID) (error)
 	UpdateManga(ctx context.Context, manga entity.Manga) (error)
 }
@@ -43,9 +43,9 @@ func(db *mangaConnection) GetAllManga(ctx context.Context) ([]entity.Manga, erro
 	return listManga, nil
 }
 
-func(db *mangaConnection) FindMangaByID(ctx context.Context, mangaID uuid.UUID) (entity.Manga, error) {
+func(db *mangaConnection) FindMangaByID(ctx context.Context, mangaID int) (entity.Manga, error) {
 	var manga entity.Manga
-	ux := db.connection.Where("id = ?", mangaID).Take(&manga)
+	ux := db.connection.Where("id = ?", mangaID).Find(&manga)
 	if ux.Error != nil {
 		return manga, ux.Error
 	}

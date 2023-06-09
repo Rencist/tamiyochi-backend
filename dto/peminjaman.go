@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"tamiyochi-backend/entity"
 	"time"
 
 	"github.com/google/uuid"
@@ -19,8 +20,20 @@ type PeminjamanCreateDTO struct {
 }
 
 type PeminjamanReponse struct {
-	ID   			uuid.UUID `gorm:"primary_key;not_null" json:"id"`
-	Volume 			string    `json:"volume"`
-	JumlahTersedia 	string    `json:"jumlah_tersedia"`
-	HargaSewa 		string    `json:"harga_sewa"`
+	IDPeminjamanManga	uuid.UUID `json:"id_peminjaman_manga"`
+	IDSeri   			int	   `json:"id_seri"`
+	IDPenulis			int    `json:"id_penulis"`
+	IDManga				int    `json:"id_manga"`
+	IDDenda				uuid.UUID    `json:"id_denda"`
+	IDPeminjaman		uuid.UUID `json:"id_peminjaman"`
+	Foto				string `json:"foto"`
+	Judul				string `json:"judul"`
+	Penulis				[]entity.Penulis `json:"penulis"`
+	Volume				int    `json:"volume"`
+	TanggalPeminjaman   time.Time 	`json:"tanggal_peminjaman"`
+	BatasPengembalian 	time.Time 	`json:"batas_pengembalian"`
+	StatusPeminjaman	string 		`json:"status_peminjaman"`
+	Denda				string 		`json:"denda"`
+	IsDendaLunas		string		`json:"is_denda_lunas"`
+	JumlahSewa			int 		`json:"jumlah_sewa"`
 }

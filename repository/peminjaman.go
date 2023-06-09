@@ -4,6 +4,7 @@ import (
 	"context"
 	"tamiyochi-backend/entity"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -11,6 +12,8 @@ type PeminjamanRepository interface {
 	CreatePeminjaman(ctx context.Context, peminjaman entity.Peminjaman) (entity.Peminjaman, error)
 	GetAllPeminjamanUser(ctx context.Context) ([]entity.Peminjaman, error)
 	CreatePeminjamanManga(ctx context.Context, peminjamanManga entity.PeminjamanManga) (entity.PeminjamanManga, error)
+	FindPeminjamanMangaByPeminjamanID(ctx context.Context, peminjamanID uuid.UUID) ([]entity.PeminjamanManga, error)
+	FindDendaByPeminjamanID(ctx context.Context, peminjamanID uuid.UUID) (entity.Denda, error)
 }
 
 type peminjamanConnection struct {
@@ -46,4 +49,22 @@ func(db *peminjamanConnection) CreatePeminjamanManga(ctx context.Context, peminj
 		return entity.PeminjamanManga{}, uc.Error
 	}
 	return peminjamanManga, nil
+}
+
+func(db *peminjamanConnection) FindPeminjamanMangaByPeminjamanID(ctx context.Context, peminjamanID uuid.UUID) ([]entity.PeminjamanManga, error) {
+	var peminjamanManga []entity.PeminjamanManga
+	tx := db.connection.Where("peminjaman_id = ?", peminjamanID).Find(&peminjamanManga)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return peminjamanManga, nil
+}
+
+func(db *peminjamanConnection) FindDendaByPeminjamanID(ctx context.Context, peminjamanID uuid.UUID) (entity.Denda, error) {
+	var denda entity.Denda
+	tx := db.connection.Where("peminjaman_id = ?", peminjamanID).Find(&denda)
+	if tx.Error != nil {
+		return entity.Denda{}, tx.Error
+	}
+	return denda, nil
 }

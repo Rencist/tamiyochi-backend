@@ -16,6 +16,7 @@ type CartRepository interface {
 	DeleteCart(ctx context.Context, mangaID int) (error)
 	DeleteAllByMangaIDCart(ctx context.Context, mangaID int) (error)
 	DeleteAllUserCart(ctx context.Context, userID uuid.UUID) (error)
+	CekTotalCart(ctx context.Context, userID uuid.UUID) (int64, error)
 }
 
 type cartConnection struct {
@@ -115,4 +116,13 @@ func(db *cartConnection) DeleteAllUserCart(ctx context.Context, userID uuid.UUID
 		return uc.Error
 	}
 	return nil
+}
+
+func(db *cartConnection) CekTotalCart(ctx context.Context, userID uuid.UUID) (int64, error) {
+	var cartCount int64
+	ux := db.connection.Model(&entity.Cart{}).Where("user_id = ?", userID).Count(&cartCount)
+	if ux.Error != nil {
+		return 0, ux.Error
+	}
+	return cartCount, nil
 }

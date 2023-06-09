@@ -56,7 +56,7 @@ func(us *seriService) UpdateSeri(ctx context.Context, seriDTO dto.SeriUpdateDTO)
 }
 
 func(us *seriService) FindSeriByID(ctx context.Context, seriID int) (dto.SeriResponseDTO, error) {
-	return us.seriRepository.FindSeriByID(ctx, seriID)
+	return us.seriRepository.FindSeriByIDDTOResponse(ctx, seriID)
 }
 
 func(us *seriService) UpsertRating(ctx context.Context, seriID int, rating float32, userID uuid.UUID) (error) {

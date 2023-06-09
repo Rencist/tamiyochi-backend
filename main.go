@@ -33,6 +33,7 @@ func main() {
 		seriRepository repository.SeriRepository = repository.NewSeriRepository(db)
 		provinsiRepository repository.ProvinsiRepository = repository.NewProvinsiRepository(db)
 		kabupatenRepository repository.KabupatenRepository = repository.NewKabupatenRepository(db)
+		mangaRepository repository.MangaRepository = repository.NewMangaRepository(db)
 		komentarRepository repository.KomentarRepository = repository.NewKomentarRepository(db)
 		cartRepository repository.CartRepository = repository.NewCartRepository(db)
 		peminjamanRepository repository.PeminjamanRepository = repository.NewPeminjamanRepository(db)
@@ -43,7 +44,7 @@ func main() {
 		kabupatenService service.KabupatenService = service.NewKabupatenService(kabupatenRepository)
 		komentarService service.KomentarService = service.NewKomentarService(komentarRepository)
 		cartService service.CartService = service.NewCartService(cartRepository)
-		peminjamanService service.PeminjamanService = service.NewPeminjamanService(peminjamanRepository, cartRepository)
+		peminjamanService service.PeminjamanService = service.NewPeminjamanService(peminjamanRepository, cartRepository, mangaRepository, seriRepository)
 
 		userController controller.UserController = controller.NewUserController(userService, jwtService)
 		seriController controller.SeriController = controller.NewSeriController(seriServiec, jwtService)

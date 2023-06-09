@@ -14,12 +14,14 @@ type SeriRepository interface {
 	GetTotalData(ctx context.Context) (int64, error)
 	CreateSeri(ctx context.Context, seri entity.Seri) (entity.Seri, error)
 	GetAllSeri(ctx context.Context, pagination entity.Pagination) (dto.PaginationResponse, error)
-	FindSeriByID(ctx context.Context, seriID int) (dto.SeriResponseDTO, error)
+	FindSeriByIDDTOResponse(ctx context.Context, seriID int) (dto.SeriResponseDTO, error)
 	DeleteSeri(ctx context.Context, seriID int) (error)
 	UpdateSeri(ctx context.Context, seri entity.Seri) (error)
 	AddRating(ctx context.Context, seriID int, rating float32, userID uuid.UUID) (error)
 	CheckRatingUser(ctx context.Context, seriID int, userID uuid.UUID) (bool, error)
 	UpdateRating(ctx context.Context, seriID int, rating float32, userID uuid.UUID) (error)
+	FindSeryByID(ctx context.Context, seriID int) (entity.Seri, error)
+	FindPenulisBySeriID(ctx context.Context, seriID int) ([]entity.Penulis, error)
 }
 
 type seriConnection struct {
@@ -101,7 +103,7 @@ func(db *seriConnection) GetAllSeri(ctx context.Context, pagination entity.Pagin
 	return paginationResponse, nil
 }
 
-func(db *seriConnection) FindSeriByID(ctx context.Context, seriID int) (dto.SeriResponseDTO, error) {
+func(db *seriConnection) FindSeriByIDDTOResponse(ctx context.Context, seriID int) (dto.SeriResponseDTO, error) {
 	var seri entity.Seri
 	ux := db.connection.Where("id = ?", seriID).Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri").Take(&seri)
 	var penerbit entity.Penerbit
@@ -206,4 +208,31 @@ func(db *seriConnection) UpdateRating(ctx context.Context, seriID int, rating fl
 		return uc.Error
 	}
 	return nil
+}
+
+func(db *seriConnection) FindSeryByID(ctx context.Context, seriID int) (entity.Seri, error) {
+	var seri entity.Seri
+	ux := db.connection.Where("id = ?", seriID).Find(&seri)
+	if ux.Error != nil {
+		return seri, ux.Error
+	}
+	return seri, nil
+}
+
+func(db *seriConnection) FindPenulisBySeriID(ctx context.Context, seriID int) ([]entity.Penulis, error) {
+	var penulisSeri []entity.PenulisSeri
+	var penulis []entity.Penulis
+	ux := db.connection.Where("seri_id = ?", seriID).Find(&penulisSeri)
+	if ux.Error != nil {
+		return nil, ux.Error
+	}
+	for _, res := range penulisSeri {
+		var penulisEntity entity.Penulis
+		ux := db.connection.Where("id = ?", res.PenulisID).Find(&penulisEntity)
+		if ux.Error != nil {
+			return nil, ux.Error
+		}
+		penulis = append(penulis, penulisEntity)
+	}
+	return penulis, nil
 }
