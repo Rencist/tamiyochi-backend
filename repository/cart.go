@@ -11,9 +11,11 @@ import (
 
 type CartRepository interface {
 	CreateCart(ctx context.Context, cart entity.Cart) (entity.Cart, error)
-	FindCartByUserID(ctx context.Context, userID uuid.UUID) (dto.CartResponse, error)
+	FindCartByUserIDResponse(ctx context.Context, userID uuid.UUID) (dto.CartResponse, error)
+	FindCartByUserID(ctx context.Context, userID uuid.UUID) ([]entity.Cart, error)
 	DeleteCart(ctx context.Context, mangaID int) (error)
 	DeleteAllByMangaIDCart(ctx context.Context, mangaID int) (error)
+	DeleteAllUserCart(ctx context.Context, userID uuid.UUID) (error)
 }
 
 type cartConnection struct {
@@ -36,7 +38,7 @@ func(db *cartConnection) CreateCart(ctx context.Context, cart entity.Cart) (enti
 	return cart, nil
 }
 
-func(db *cartConnection) FindCartByUserID(ctx context.Context, userID uuid.UUID) (dto.CartResponse, error) {
+func(db *cartConnection) FindCartByUserIDResponse(ctx context.Context, userID uuid.UUID) (dto.CartResponse, error) {
 	var jumlahMangaCart dto.JumlahMangaCart
 	var cart []entity.Cart
 	
@@ -92,6 +94,23 @@ func(db *cartConnection) DeleteCart(ctx context.Context, mangaID int) (error) {
 
 func(db *cartConnection) DeleteAllByMangaIDCart(ctx context.Context, mangaID int) (error) {
 	uc := db.connection.Where("manga_id = ?", mangaID).Delete(&entity.Cart{})
+	if uc.Error != nil {
+		return uc.Error
+	}
+	return nil
+}
+
+func(db *cartConnection) FindCartByUserID(ctx context.Context, userID uuid.UUID) ([]entity.Cart, error) {
+	var cart []entity.Cart
+	ux := db.connection.Where("user_id = ?", userID).Find(&cart)
+	if ux.Error != nil {
+		return nil, ux.Error
+	}
+	return cart, nil
+}
+
+func(db *cartConnection) DeleteAllUserCart(ctx context.Context, userID uuid.UUID) (error) {
+	uc := db.connection.Where("user_id = ?", userID).Delete(&entity.Cart{})
 	if uc.Error != nil {
 		return uc.Error
 	}

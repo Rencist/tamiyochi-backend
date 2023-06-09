@@ -35,6 +35,7 @@ func main() {
 		kabupatenRepository repository.KabupatenRepository = repository.NewKabupatenRepository(db)
 		komentarRepository repository.KomentarRepository = repository.NewKomentarRepository(db)
 		cartRepository repository.CartRepository = repository.NewCartRepository(db)
+		peminjamanRepository repository.PeminjamanRepository = repository.NewPeminjamanRepository(db)
 
 		userService service.UserService = service.NewUserService(userRepository)
 		seriServiec service.SeriService = service.NewSeriService(seriRepository)
@@ -42,6 +43,7 @@ func main() {
 		kabupatenService service.KabupatenService = service.NewKabupatenService(kabupatenRepository)
 		komentarService service.KomentarService = service.NewKomentarService(komentarRepository)
 		cartService service.CartService = service.NewCartService(cartRepository)
+		peminjamanService service.PeminjamanService = service.NewPeminjamanService(peminjamanRepository, cartRepository)
 
 		userController controller.UserController = controller.NewUserController(userService, jwtService)
 		seriController controller.SeriController = controller.NewSeriController(seriServiec, jwtService)
@@ -49,6 +51,7 @@ func main() {
 		kabupatenController controller.KabupatenController = controller.NewKabupatenController(kabupatenService)
 		komentarController controller.KomentarController = controller.NewKomentarController(komentarService, jwtService)
 		cartController controller.CartController = controller.NewCartController(cartService, jwtService)
+		peminjamanController controller.PeminjamanController = controller.NewPeminjamanController(peminjamanService, jwtService)
 	)
 
 	server := gin.Default()
@@ -60,6 +63,7 @@ func main() {
 	routes.KabupatenRoutes(server, kabupatenController)
 	routes.KomentarRoutes(server, komentarController, jwtService)
 	routes.CartRoutes(server, cartController, jwtService)
+	routes.PeminjamanRoutes(server, peminjamanController, jwtService)
 
 	port := os.Getenv("PORT")
 	if port == "" {

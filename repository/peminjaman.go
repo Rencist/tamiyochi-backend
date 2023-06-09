@@ -10,6 +10,7 @@ import (
 type PeminjamanRepository interface {
 	CreatePeminjaman(ctx context.Context, peminjaman entity.Peminjaman) (entity.Peminjaman, error)
 	GetAllPeminjamanUser(ctx context.Context) ([]entity.Peminjaman, error)
+	CreatePeminjamanManga(ctx context.Context, peminjamanManga entity.PeminjamanManga) (entity.PeminjamanManga, error)
 }
 
 type peminjamanConnection struct {
@@ -37,4 +38,12 @@ func(db *peminjamanConnection) GetAllPeminjamanUser(ctx context.Context) ([]enti
 		return nil, tx.Error
 	}
 	return listPeminjaman, nil
+}
+
+func(db *peminjamanConnection) CreatePeminjamanManga(ctx context.Context, peminjamanManga entity.PeminjamanManga) (entity.PeminjamanManga, error) {
+	uc := db.connection.Create(&peminjamanManga)
+	if uc.Error != nil {
+		return entity.PeminjamanManga{}, uc.Error
+	}
+	return peminjamanManga, nil
 }

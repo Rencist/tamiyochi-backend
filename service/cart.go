@@ -43,7 +43,7 @@ func(us *cartService) FindCartByUserID(ctx context.Context, userID uuid.UUID) (d
 	// }
 	// for i, _ := range res {
 	// }
-	return us.cartRepository.FindCartByUserID(ctx, userID)
+	return us.cartRepository.FindCartByUserIDResponse(ctx, userID)
 }
 
 func(us *cartService) DeleteCart(ctx context.Context, mangaID int) (error) {

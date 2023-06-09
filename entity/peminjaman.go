@@ -6,6 +6,10 @@ import (
 	"github.com/google/uuid"
 )
 
+func (Peminjaman) TableName() string {
+    return "peminjamans"
+}
+
 type Peminjaman struct {
 	ID   				uuid.UUID 	`gorm:"primary_key;not_null" json:"id"`
 	BatasPengembalian 	time.Time 	`json:"batas_pengembalian"`

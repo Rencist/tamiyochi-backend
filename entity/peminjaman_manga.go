@@ -1,9 +1,11 @@
 package entity
 
-type PeminjamanManga struct {
-	ID int `gorm:"primary_key;not_null" json:"id"`
+import "github.com/google/uuid"
 
-	PeminjamanID int         `gorm:"foreignKey" json:"peminjaman_id"`
+type PeminjamanManga struct {
+	ID uuid.UUID `gorm:"primary_key;not_null" json:"id"`
+
+	PeminjamanID uuid.UUID     `gorm:"foreignKey" json:"peminjaman_id"`
 	Peminjaman   *Peminjaman `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"peminjaman,omitempty"`
 
 	MangaID int    `gorm:"foreignKey" json:"manga_id"`

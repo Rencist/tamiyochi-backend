@@ -19,15 +19,25 @@ type peminjamanController struct {
 	peminjamanService service.PeminjamanService
 }
 
-func NewPeminjamanController(us service.PeminjamanService) PeminjamanController {
+func NewPeminjamanController(us service.PeminjamanService, jt service.JWTService) PeminjamanController {
 	return &peminjamanController{
 		peminjamanService: us,
+		jwtService: jt,
 	}
 }
 
-func(uc *peminjamanController) CreatePeminjaman(ctx *gin.Context) {
+func(uc *peminjamanController) CreatePeminjaman(ctx *gin.Context) { 
+	token := ctx.MustGet("token").(string)
+	userID, err := uc.jwtService.GetUserIDByToken(token)
+	if err != nil {
+		response := common.BuildErrorResponse("Gagal Memproses Request", "Token Tidak Valid", nil)
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
+		return
+	}
+
 	var peminjaman dto.PeminjamanCreateDTO
-	err := ctx.ShouldBind(&peminjaman)
+	peminjaman.UserID = userID
+	err = ctx.ShouldBind(&peminjaman)
 	result, err := uc.peminjamanService.CreatePeminjaman(ctx.Request.Context(), peminjaman)
 	if err != nil {
 		res := common.BuildErrorResponse("Gagal Menambahkan Peminjaman", err.Error(), common.EmptyObj{})
