@@ -66,13 +66,20 @@ func(db *seriConnection) GetAllSeri(ctx context.Context, pagination entity.Pagin
 			return dto.PaginationResponse{}, err
 		}
 		totalData = int64(len(seriGenre))
-		tx = db.connection.Debug().Scopes(common.Pagination(&pagination, totalData)).Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri").Order("total_pembaca desc").Where("id IN ?", seriGenre)
+		tx = db.connection.Debug().Scopes(common.Pagination(&pagination, totalData)).Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri").Where("id IN ?", seriGenre)
 		if tx.Error != nil {
 			return dto.PaginationResponse{}, tx.Error
 		}
 	} else {
 		totalData, _ = db.GetTotalData(ctx, search)
-		tx = db.connection.Debug().Scopes(common.Pagination(&pagination, totalData)).Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri").Order("total_pembaca desc")
+		tx = db.connection.Debug().Scopes(common.Pagination(&pagination, totalData)).Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri")
+		if tx.Error != nil {
+			return dto.PaginationResponse{}, tx.Error
+		}
+	}
+	
+	if sort != "" {
+		tx = tx.Order(sort)
 		if tx.Error != nil {
 			return dto.PaginationResponse{}, tx.Error
 		}

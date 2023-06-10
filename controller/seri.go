@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -71,6 +72,19 @@ func(uc *seriController) GetAllSeri(ctx *gin.Context) {
 	}
 	search := ctx.Query("search")
 	sort := ctx.Query("sort")
+
+	if sort != "judul" && sort != "skor" && sort != "total_pembaca" {
+		sort = "total_pembaca"
+	}
+
+	if sort == "judul" {
+		sort = sort + " asc"
+	} else {
+		sort = sort + " desc"
+	}
+
+	fmt.Println("sort: ", sort)
+		
 	result, err := uc.seriService.GetAllSeri(ctx.Request.Context(), pagination, filter, search, sort)
 	if err != nil {
 		res := common.BuildErrorResponse("Gagal Mendapatkan List Seri", err.Error(), common.EmptyObj{})
