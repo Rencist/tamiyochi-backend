@@ -12,7 +12,7 @@ import (
 
 type SeriService interface {
 	CreateSeri(ctx context.Context, seriDTO dto.SeriCreateDTO) (entity.Seri, error)
-	GetAllSeri(ctx context.Context, pagination entity.Pagination) (dto.PaginationResponse, error)
+	GetAllSeri(ctx context.Context, pagination entity.Pagination, filter []int, search string, sort string) (dto.PaginationResponse, error)
 	DeleteSeri(ctx context.Context, seriID int) (error)
 	UpdateSeri(ctx context.Context, seriDTO dto.SeriUpdateDTO) (error)
 	FindSeriByID(ctx context.Context, seriID int) (dto.SeriResponseDTO, error)
@@ -38,8 +38,8 @@ func(us *seriService) CreateSeri(ctx context.Context, seriDTO dto.SeriCreateDTO)
 	return us.seriRepository.CreateSeri(ctx, seri)
 }
 
-func(us *seriService) GetAllSeri(ctx context.Context, pagination entity.Pagination) (dto.PaginationResponse, error) {
-	return us.seriRepository.GetAllSeri(ctx, pagination)
+func(us *seriService) GetAllSeri(ctx context.Context, pagination entity.Pagination, filter []int, search string, sort string) (dto.PaginationResponse, error) {
+	return us.seriRepository.GetAllSeri(ctx, pagination, filter, search, sort)
 }
 
 func(us *seriService) DeleteSeri(ctx context.Context, seriID int) (error) {

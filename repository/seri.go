@@ -13,7 +13,7 @@ import (
 type SeriRepository interface {
 	GetTotalData(ctx context.Context) (int64, error)
 	CreateSeri(ctx context.Context, seri entity.Seri) (entity.Seri, error)
-	GetAllSeri(ctx context.Context, pagination entity.Pagination) (dto.PaginationResponse, error)
+	GetAllSeri(ctx context.Context, pagination entity.Pagination, filter []int, search string, sort string) (dto.PaginationResponse, error)
 	FindSeriByIDDTOResponse(ctx context.Context, seriID int) (dto.SeriResponseDTO, error)
 	DeleteSeri(ctx context.Context, seriID int) (error)
 	UpdateSeri(ctx context.Context, seri entity.Seri) (error)
@@ -22,6 +22,7 @@ type SeriRepository interface {
 	UpdateRating(ctx context.Context, seriID int, rating float32, userID uuid.UUID) (error)
 	FindSeryByID(ctx context.Context, seriID int) (entity.Seri, error)
 	FindPenulisBySeriID(ctx context.Context, seriID int) ([]entity.Penulis, error)
+	GetSeriIDGenreByGenreID(ctx context.Context, GenreID []int) ([]int64, error)
 }
 
 type seriConnection struct {
@@ -51,13 +52,28 @@ func(db *seriConnection) CreateSeri(ctx context.Context, seri entity.Seri) (enti
 	return seri, nil
 }
 
-func(db *seriConnection) GetAllSeri(ctx context.Context, pagination entity.Pagination) (dto.PaginationResponse, error) {
+func(db *seriConnection) GetAllSeri(ctx context.Context, pagination entity.Pagination, filter []int, search string, sort string) (dto.PaginationResponse, error) {
 	var listSeri []entity.Seri
-	totalData, _ := db.GetTotalData(ctx)
-	tx := db.connection.Debug().Scopes(common.Pagination(&pagination, totalData)).Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri").Order("total_pembaca desc").Find(&listSeri)
-	if tx.Error != nil {
-		return dto.PaginationResponse{}, tx.Error
+	var totalData int64
+
+	if len(filter) > 0 {
+		seriGenre, err := db.GetSeriIDGenreByGenreID(ctx, filter)
+		if err != nil {
+			return dto.PaginationResponse{}, err
+		}
+		totalData = int64(len(seriGenre))
+		tx := db.connection.Debug().Scopes(common.Pagination(&pagination, totalData)).Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri").Order("total_pembaca desc").Where("id IN ?", seriGenre).Find(&listSeri)
+		if tx.Error != nil {
+			return dto.PaginationResponse{}, tx.Error
+		}
+	} else {
+		totalData, _ = db.GetTotalData(ctx)
+		tx := db.connection.Debug().Scopes(common.Pagination(&pagination, totalData)).Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri").Order("total_pembaca desc").Find(&listSeri)
+		if tx.Error != nil {
+			return dto.PaginationResponse{}, tx.Error
+		}
 	}
+
 	var listSeriDTOArray []dto.SeriResponseDTO
 	for _, res := range listSeri {
 		var penerbit entity.Penerbit
@@ -235,4 +251,37 @@ func(db *seriConnection) FindPenulisBySeriID(ctx context.Context, seriID int) ([
 		penulis = append(penulis, penulisEntity)
 	}
 	return penulis, nil
+}
+
+func(db *seriConnection) GetSeriIDGenreByGenreID(ctx context.Context, GenreID []int) ([]int64, error) {
+	var genreIDFilter []int64
+	ux := db.connection.Raw(`
+		select kuda.manga_id
+		from
+			(
+				select
+					count(1) as jumlah_manga_genre,
+					sapi.manga_id
+				from
+					(
+						select
+							s.genre_id,
+							m.judul as manga,
+							m.id as manga_id,
+							g.nama as genre
+						from
+							seri_genres s
+							JOIN genres g ON s.genre_id = g.id
+							JOIN seris m ON s.seri_id = m.id
+						where
+							s.genre_id IN (?)
+					) sapi
+				group by(sapi.manga_id)
+			) kuda
+		where
+		kuda.jumlah_manga_genre > ?`, GenreID, len(GenreID) - 1).Scan(&genreIDFilter)
+	if ux.Error != nil {
+		return nil, ux.Error
+	}
+	return genreIDFilter, nil
 }

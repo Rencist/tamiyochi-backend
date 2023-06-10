@@ -48,3 +48,7 @@ type SeriResponseDTO struct {
 	Penulis 		[]entity.Penulis `json:"penulis"`
 	Genre 			[]entity.Genre `json:"genre"`
 }
+
+type SeriGenreFilter struct {
+	SeriID int64 `json:"seri_id"`
+}
