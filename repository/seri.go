@@ -11,7 +11,7 @@ import (
 )
 
 type SeriRepository interface {
-	GetTotalData(ctx context.Context) (int64, error)
+	GetTotalData(ctx context.Context, search string) (int64, error)
 	CreateSeri(ctx context.Context, seri entity.Seri) (entity.Seri, error)
 	GetAllSeri(ctx context.Context, pagination entity.Pagination, filter []int, search string, sort string) (dto.PaginationResponse, error)
 	FindSeriByIDDTOResponse(ctx context.Context, seriID int) (dto.SeriResponseDTO, error)
@@ -22,7 +22,7 @@ type SeriRepository interface {
 	UpdateRating(ctx context.Context, seriID int, rating float32, userID uuid.UUID) (error)
 	FindSeryByID(ctx context.Context, seriID int) (entity.Seri, error)
 	FindPenulisBySeriID(ctx context.Context, seriID int) ([]entity.Penulis, error)
-	GetSeriIDGenreByGenreID(ctx context.Context, GenreID []int) ([]int64, error)
+	GetSeriIDGenreByGenreID(ctx context.Context, search string, GenreID []int) ([]int64, error)
 }
 
 type seriConnection struct {
@@ -35,9 +35,13 @@ func NewSeriRepository(db *gorm.DB) SeriRepository {
 	}
 }
 
-func (db *seriConnection) GetTotalData(ctx context.Context) (int64, error) {
+func (db *seriConnection) GetTotalData(ctx context.Context, search string) (int64, error) {
 	var totalData int64
-	bc := db.connection.Model(&entity.Seri{}).Count(&totalData)
+	bc := db.connection.Model(&entity.Seri{})
+	if search != "" {
+		bc.Where("LOWER(judul) LIKE LOWER(?)", "%"+search+"%")
+	}
+	bc.Count(&totalData)
 	if bc.Error != nil {
 		return 0, bc.Error
 	}
@@ -55,25 +59,33 @@ func(db *seriConnection) CreateSeri(ctx context.Context, seri entity.Seri) (enti
 func(db *seriConnection) GetAllSeri(ctx context.Context, pagination entity.Pagination, filter []int, search string, sort string) (dto.PaginationResponse, error) {
 	var listSeri []entity.Seri
 	var totalData int64
-
+	var tx *gorm.DB
 	if len(filter) > 0 {
-		seriGenre, err := db.GetSeriIDGenreByGenreID(ctx, filter)
+		seriGenre, err := db.GetSeriIDGenreByGenreID(ctx, search, filter)
 		if err != nil {
 			return dto.PaginationResponse{}, err
 		}
 		totalData = int64(len(seriGenre))
-		tx := db.connection.Debug().Scopes(common.Pagination(&pagination, totalData)).Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri").Order("total_pembaca desc").Where("id IN ?", seriGenre).Find(&listSeri)
+		tx = db.connection.Debug().Scopes(common.Pagination(&pagination, totalData)).Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri").Order("total_pembaca desc").Where("id IN ?", seriGenre)
 		if tx.Error != nil {
 			return dto.PaginationResponse{}, tx.Error
 		}
 	} else {
-		totalData, _ = db.GetTotalData(ctx)
-		tx := db.connection.Debug().Scopes(common.Pagination(&pagination, totalData)).Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri").Order("total_pembaca desc").Find(&listSeri)
+		totalData, _ = db.GetTotalData(ctx, search)
+		tx = db.connection.Debug().Scopes(common.Pagination(&pagination, totalData)).Preload("Mangas").Preload("SeriGenre").Preload("PenulisSeri").Order("total_pembaca desc")
 		if tx.Error != nil {
 			return dto.PaginationResponse{}, tx.Error
 		}
 	}
 
+	if search != "" {
+		tx = tx.Where("LOWER(judul) LIKE LOWER(?)", "%"+search+"%")
+		if tx.Error != nil {
+			return dto.PaginationResponse{}, tx.Error
+		}
+	}
+	
+	tx.Find(&listSeri)
 	var listSeriDTOArray []dto.SeriResponseDTO
 	for _, res := range listSeri {
 		var penerbit entity.Penerbit
@@ -253,8 +265,9 @@ func(db *seriConnection) FindPenulisBySeriID(ctx context.Context, seriID int) ([
 	return penulis, nil
 }
 
-func(db *seriConnection) GetSeriIDGenreByGenreID(ctx context.Context, GenreID []int) ([]int64, error) {
+func(db *seriConnection) GetSeriIDGenreByGenreID(ctx context.Context, search string, GenreID []int) ([]int64, error) {
 	var genreIDFilter []int64
+	search = "%" + search + "%"
 	ux := db.connection.Raw(`
 		select kuda.manga_id
 		from
@@ -275,11 +288,13 @@ func(db *seriConnection) GetSeriIDGenreByGenreID(ctx context.Context, GenreID []
 							JOIN seris m ON s.seri_id = m.id
 						where
 							s.genre_id IN (?)
+							and 
+							LOWER(judul) LIKE LOWER(?)
 					) sapi
 				group by(sapi.manga_id)
 			) kuda
 		where
-		kuda.jumlah_manga_genre > ?`, GenreID, len(GenreID) - 1).Scan(&genreIDFilter)
+		kuda.jumlah_manga_genre > ?`, GenreID, search, len(GenreID) - 1).Scan(&genreIDFilter)
 	if ux.Error != nil {
 		return nil, ux.Error
 	}

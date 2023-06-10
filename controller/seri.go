@@ -63,13 +63,14 @@ func(uc *seriController) GetAllSeri(ctx *gin.Context) {
 
 	filterReq := uc.QueryArrayRequest(ctx, "filter")
 	var filter[]int
-	for i := 0; i < len(filterReq[0]); i++ {
-		filterToInt, _ := strconv.Atoi(filterReq[0][strconv.Itoa(i)])
-		filter = append(filter, filterToInt)
+	if len(filterReq) > 0 {
+		for i := 0; i < len(filterReq[0]); i++ {
+			filterToInt, _ := strconv.Atoi(filterReq[0][strconv.Itoa(i)])
+			filter = append(filter, filterToInt)
+		}
 	}
 	search := ctx.Query("search")
 	sort := ctx.Query("sort")
-
 	result, err := uc.seriService.GetAllSeri(ctx.Request.Context(), pagination, filter, search, sort)
 	if err != nil {
 		res := common.BuildErrorResponse("Gagal Mendapatkan List Seri", err.Error(), common.EmptyObj{})
