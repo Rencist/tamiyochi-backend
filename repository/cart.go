@@ -13,9 +13,9 @@ type CartRepository interface {
 	CreateCart(ctx context.Context, cart entity.Cart) (entity.Cart, error)
 	FindCartByUserIDResponse(ctx context.Context, userID uuid.UUID) (dto.CartResponse, error)
 	FindCartByUserID(ctx context.Context, userID uuid.UUID) ([]entity.Cart, error)
-	DeleteCart(ctx context.Context, mangaID int) (error)
-	DeleteAllByMangaIDCart(ctx context.Context, mangaID int) (error)
-	DeleteAllUserCart(ctx context.Context, userID uuid.UUID) (error)
+	DeleteCart(ctx context.Context, mangaID int) error
+	DeleteAllByMangaIDCart(ctx context.Context, mangaID int) error
+	DeleteAllUserCart(ctx context.Context, userID uuid.UUID) error
 	CekTotalCart(ctx context.Context, userID uuid.UUID) (int64, error)
 }
 
@@ -29,7 +29,7 @@ func NewCartRepository(db *gorm.DB) CartRepository {
 	}
 }
 
-func(db *cartConnection) CreateCart(ctx context.Context, cart entity.Cart) (entity.Cart, error) {
+func (db *cartConnection) CreateCart(ctx context.Context, cart entity.Cart) (entity.Cart, error) {
 	cartID := uuid.New()
 	cart.ID = cartID
 	uc := db.connection.Create(&cart)
@@ -39,10 +39,10 @@ func(db *cartConnection) CreateCart(ctx context.Context, cart entity.Cart) (enti
 	return cart, nil
 }
 
-func(db *cartConnection) FindCartByUserIDResponse(ctx context.Context, userID uuid.UUID) (dto.CartResponse, error) {
+func (db *cartConnection) FindCartByUserIDResponse(ctx context.Context, userID uuid.UUID) (dto.CartResponse, error) {
 	var jumlahMangaCart dto.JumlahMangaCart
 	var cart []entity.Cart
-	
+
 	var cartResponseDTO dto.CartResponse
 	var cartDTO dto.Cart
 	totalHarga := 0
@@ -62,6 +62,7 @@ func(db *cartConnection) FindCartByUserIDResponse(ctx context.Context, userID uu
 		if ux.Error != nil {
 			return dto.CartResponse{}, ux.Error
 		}
+		cartDTO.ID = res.ID
 		cartDTO.MangaID = manga.ID
 		cartDTO.JumlahTersedia = manga.JumlahTersedia
 		cartDTO.HargaSewa = manga.HargaSewa
@@ -84,7 +85,7 @@ func(db *cartConnection) FindCartByUserIDResponse(ctx context.Context, userID uu
 	return cartResponseDTO, nil
 }
 
-func(db *cartConnection) DeleteCart(ctx context.Context, mangaID int) (error) {
+func (db *cartConnection) DeleteCart(ctx context.Context, mangaID int) error {
 	var cart entity.Cart
 	uc := db.connection.Where("manga_id = ?", mangaID).Limit(1).Take(&cart).Delete(&cart)
 	if uc.Error != nil {
@@ -93,7 +94,7 @@ func(db *cartConnection) DeleteCart(ctx context.Context, mangaID int) (error) {
 	return nil
 }
 
-func(db *cartConnection) DeleteAllByMangaIDCart(ctx context.Context, mangaID int) (error) {
+func (db *cartConnection) DeleteAllByMangaIDCart(ctx context.Context, mangaID int) error {
 	uc := db.connection.Where("manga_id = ?", mangaID).Delete(&entity.Cart{})
 	if uc.Error != nil {
 		return uc.Error
@@ -101,7 +102,7 @@ func(db *cartConnection) DeleteAllByMangaIDCart(ctx context.Context, mangaID int
 	return nil
 }
 
-func(db *cartConnection) FindCartByUserID(ctx context.Context, userID uuid.UUID) ([]entity.Cart, error) {
+func (db *cartConnection) FindCartByUserID(ctx context.Context, userID uuid.UUID) ([]entity.Cart, error) {
 	var cart []entity.Cart
 	ux := db.connection.Where("user_id = ?", userID).Find(&cart)
 	if ux.Error != nil {
@@ -110,7 +111,7 @@ func(db *cartConnection) FindCartByUserID(ctx context.Context, userID uuid.UUID)
 	return cart, nil
 }
 
-func(db *cartConnection) DeleteAllUserCart(ctx context.Context, userID uuid.UUID) (error) {
+func (db *cartConnection) DeleteAllUserCart(ctx context.Context, userID uuid.UUID) error {
 	uc := db.connection.Where("user_id = ?", userID).Delete(&entity.Cart{})
 	if uc.Error != nil {
 		return uc.Error
@@ -118,7 +119,7 @@ func(db *cartConnection) DeleteAllUserCart(ctx context.Context, userID uuid.UUID
 	return nil
 }
 
-func(db *cartConnection) CekTotalCart(ctx context.Context, userID uuid.UUID) (int64, error) {
+func (db *cartConnection) CekTotalCart(ctx context.Context, userID uuid.UUID) (int64, error) {
 	var cartCount int64
 	ux := db.connection.Model(&entity.Cart{}).Where("user_id = ?", userID).Count(&cartCount)
 	if ux.Error != nil {
