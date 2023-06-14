@@ -12,8 +12,8 @@ func MangaRoutes(router *gin.Engine, MangaController controller.MangaController,
 	mangaRoutes := router.Group("/api/manga")
 	{
 		mangaRoutes.POST("", MangaController.CreateManga)
-		mangaRoutes.GET("", middleware.Authenticate(jwtService), MangaController.GetAllManga)
-		mangaRoutes.DELETE("/", middleware.Authenticate(jwtService), MangaController.DeleteManga)
-		mangaRoutes.PUT("/", middleware.Authenticate(jwtService), MangaController.UpdateManga)
+		mangaRoutes.GET("", middleware.Authenticate(jwtService, false), MangaController.GetAllManga)
+		mangaRoutes.DELETE("/", middleware.Authenticate(jwtService, false), MangaController.DeleteManga)
+		mangaRoutes.PUT("/", middleware.Authenticate(jwtService, false), MangaController.UpdateManga)
 	}
 }

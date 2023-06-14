@@ -37,6 +37,11 @@ func(us *seriService) CreateSeri(ctx context.Context, seriDTO dto.SeriCreateDTO)
 	if err != nil {
 		return seri, err
 	}
+	seriID, err := us.seriRepository.GetIDSeriTerakhir(ctx)
+	seri.ID = seriID + 1
+	if err != nil {
+		return seri, err
+	}
 	return us.seriRepository.CreateSeri(ctx, seri)
 }
 

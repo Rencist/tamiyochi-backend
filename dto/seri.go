@@ -4,16 +4,16 @@ import (
 	"tamiyochi-backend/entity"
 )
 
-type SeriCreateDTO struct {
-	ID   			int `gorm:"primary_key;not_null" json:"id"`
-	Judul 			string    `json:"judul" form:"judul" binding:"required"`
-	Sinopsis 		string    `json:"sinopsis" form:"sinopsis" binding:"required"`
-	TahunTerbit 	string    `json:"tahun_terbit" form:"tahun_terbit" binding:"required"`
-	Skor 			float32    `json:"skor" form:"skor" binding:"required"`
-	TotalPenilai 	int    `json:"total_penilai" form:"total_penilai" binding:"required"`
-	TotalPembaca 	int    `json:"total_pembaca" form:"total_pembaca" binding:"required"`
-
-	PenerbitID 		int   `gorm:"foreignKey" json:"penerbit_id" form:"penerbit_id" binding:"required"`
+type SeriCreateDTO struct { 
+	ID   			int 		`gorm:"primary_key;not_null" json:"id"`
+	Judul 			string    	`json:"judul" form:"judul" binding:"required"`
+	Sinopsis 		string    	`json:"sinopsis" form:"sinopsis" binding:"required"`
+	TahunTerbit 	string    	`json:"tahun_terbit" form:"tahun_terbit" binding:"required"`
+	Skor 			float32    	`json:"skor" form:"skor" binding:"required"`
+	TotalPenilai 	int    		`json:"total_penilai" form:"total_penilai" binding:"required"`
+	TotalPembaca 	int    		`json:"total_pembaca" form:"total_pembaca" binding:"required"`
+	Foto         	string    	`json:"foto" form:"total_pembaca" binding:"required"`
+	PenerbitID   	int       	`gorm:"foreignKey" json:"penerbit_id" form:"total_pembaca" binding:"required"`
 }
 
 type SeriUpdateDTO struct {

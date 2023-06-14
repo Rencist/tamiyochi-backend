@@ -11,7 +11,7 @@ import (
 func KomentarRoutes(router *gin.Engine, KomentarController controller.KomentarController, jwtService service.JWTService) {
 	komentarRoutes := router.Group("/api/komentar")
 	{
-		komentarRoutes.POST("", middleware.Authenticate(jwtService), KomentarController.CreateKomentar)
+		komentarRoutes.POST("", middleware.Authenticate(jwtService, false), KomentarController.CreateKomentar)
 		komentarRoutes.GET("/:id", KomentarController.FindKomentarBySeriID)
 	}
 }

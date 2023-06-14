@@ -25,6 +25,7 @@ type SeriRepository interface {
 	GetSeriIDGenreByGenreID(ctx context.Context, search string, GenreID []int) ([]int64, error)
 	FindUserRating(ctx context.Context, userID uuid.UUID) ([]dto.RatingReponse, error)
 	FindUserSeriRating(ctx context.Context, userID uuid.UUID, seriID int) (dto.RatingReponse, error)
+	GetIDSeriTerakhir(ctx context.Context) (int, error)
 }
 
 type seriConnection struct {
@@ -343,4 +344,13 @@ func(db *seriConnection) FindUserSeriRating(ctx context.Context, userID uuid.UUI
 		UserID: rating.UserID,
 	}
 	return ratingDTO, nil
+}
+
+func(db *seriConnection) GetIDSeriTerakhir(ctx context.Context) (int, error) {
+	var seri entity.Seri
+	ux := db.connection.Order("id desc").First(&seri)
+	if ux.Error != nil {
+		return 0, ux.Error
+	}
+	return seri.ID, nil
 }
