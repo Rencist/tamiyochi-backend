@@ -6,6 +6,7 @@ import (
 	"tamiyochi-backend/entity"
 	"tamiyochi-backend/repository"
 
+	"github.com/google/uuid"
 	"github.com/mashingan/smapping"
 )
 
@@ -30,6 +31,7 @@ func(us *komentarService) CreateKomentar(ctx context.Context, komentarDTO dto.Ko
 	if err != nil {
 		return komentar, err
 	}
+	komentar.ID = uuid.New()
 	return us.komentarRepository.CreateKomentar(ctx, komentar)
 }
 

@@ -29,8 +29,17 @@ func NewKomentarController(us service.KomentarService, jwts service.JWTService) 
 }
 
 func(uc *komentarController) CreateKomentar(ctx *gin.Context) {
+	token := ctx.MustGet("token").(string)
+	userID, err := uc.jwtService.GetUserIDByToken(token)
+	if err != nil {
+		response := common.BuildErrorResponse("Gagal Memproses Request", "Token Tidak Valid", nil)
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
+		return
+	}
+
 	var komentar dto.KomentarCreateDTO
-	err := ctx.ShouldBind(&komentar)
+	err = ctx.ShouldBind(&komentar)
+	komentar.UserID = userID
 	result, err := uc.komentarService.CreateKomentar(ctx.Request.Context(), komentar)
 	if err != nil {
 		res := common.BuildErrorResponse("Gagal Menambahkan Komentar", err.Error(), common.EmptyObj{})

@@ -6,10 +6,10 @@ import (
 
 type KomentarCreateDTO struct {
 	ID  			uuid.UUID 	`gorm:"primary_key;not_null" json:"id"`
-	Isi 			string    	`json:"isi" binding:"required" form:"isi"`
+	Isi 			string    	`json:"isi" form:"isi" binding:"required"`
 
 	UserID 			uuid.UUID 	`gorm:"foreignKey" json:"user_id" form:"user_id"`
-	SeriID 			int 		`gorm:"foreignKey" json:"seri_id" form:"seri_id"`
+	SeriID 			int 		`gorm:"foreignKey" json:"seri_id" form:"seri_id" binding:"required"`
 }
 
 type KomentarUpdateDTO struct {
