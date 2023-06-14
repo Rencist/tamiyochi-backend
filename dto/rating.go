@@ -19,8 +19,9 @@ type RatingUpdateDTO struct {
 }
 
 type RatingReponse struct {
-	ID   			uuid.UUID `gorm:"primary_key;not_null" json:"id"`
-	Volume 			string    `json:"volume"`
-	JumlahTersedia 	string    `json:"jumlah_tersedia"`
-	HargaSewa 		string    `json:"harga_sewa"`
+	ID   	uuid.UUID 	`gorm:"primary_key;not_null" json:"id"`
+	Rating float32 		`json:"rating" binding:"required"`
+	
+	SeriID int    		`gorm:"foreignKey" json:"seri_id"`
+	UserID uuid.UUID 	`gorm:"foreignKey" json:"user_id"`
 }

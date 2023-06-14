@@ -20,6 +20,8 @@ type SeriController interface {
 	UpdateSeri(ctx *gin.Context)
 	FindSeriByID(ctx *gin.Context)
 	UpsertRating(ctx *gin.Context)
+	GetRating(ctx *gin.Context)
+	GetRatingSeri(ctx *gin.Context)
 }
 
 type seriController struct {
@@ -185,6 +187,51 @@ func(uc *seriController) UpsertRating(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+func(uc *seriController) GetRating(ctx *gin.Context) {
+	token := ctx.MustGet("token").(string)
+	userID, err := uc.jwtService.GetUserIDByToken(token)
+	if err != nil {
+		response := common.BuildErrorResponse("Gagal Memproses Request", "Token Tidak Valid", nil)
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
+		return
+	}
+
+	result, err := uc.seriService.FindUserRating(ctx.Request.Context(), userID)
+	if err != nil {
+		res := common.BuildErrorResponse("Gagal Mendapatkan Detail Seri", err.Error(), common.EmptyObj{})
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+	res := common.BuildResponse(true, "Berhasil Mendapatkan Detail Seri", result)
+	ctx.JSON(http.StatusOK, res)
+}
+
+func(uc *seriController) GetRatingSeri(ctx *gin.Context) {
+	token := ctx.MustGet("token").(string)
+	userID, err := uc.jwtService.GetUserIDByToken(token)
+	if err != nil {
+		response := common.BuildErrorResponse("Gagal Memproses Request", "Token Tidak Valid", nil)
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
+		return
+	}
+
+	seriID, err := strconv.Atoi(ctx.Param("seri_id"))
+	if err != nil {
+		res := common.BuildErrorResponse("Gagal Mengupdate Seri", err.Error(), common.EmptyObj{})
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	result, err := uc.seriService.FindUserSeriRating(ctx.Request.Context(), userID, seriID)
+	if err != nil {
+		res := common.BuildErrorResponse("Gagal Mendapatkan Detail Seri", err.Error(), common.EmptyObj{})
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+	res := common.BuildResponse(true, "Berhasil Mendapatkan Detail Seri", result)
+	ctx.JSON(http.StatusOK, res)
+}
+
 func(uc *seriController) QueryArrayRequest(ctx *gin.Context, key string) ([]map[string]string){
 	var dicts []map[string]string
 	queryMap := ctx.Request.URL.Query()
@@ -210,3 +257,4 @@ func(uc *seriController) QueryArrayRequest(ctx *gin.Context, key string) ([]map[
 	}
 	return dicts
 }
+

@@ -23,6 +23,8 @@ type SeriRepository interface {
 	FindSeryByID(ctx context.Context, seriID int) (entity.Seri, error)
 	FindPenulisBySeriID(ctx context.Context, seriID int) ([]entity.Penulis, error)
 	GetSeriIDGenreByGenreID(ctx context.Context, search string, GenreID []int) ([]int64, error)
+	FindUserRating(ctx context.Context, userID uuid.UUID) ([]dto.RatingReponse, error)
+	FindUserSeriRating(ctx context.Context, userID uuid.UUID, seriID int) (dto.RatingReponse, error)
 }
 
 type seriConnection struct {
@@ -306,4 +308,39 @@ func(db *seriConnection) GetSeriIDGenreByGenreID(ctx context.Context, search str
 		return nil, ux.Error
 	}
 	return genreIDFilter, nil
+}
+
+func(db *seriConnection) FindUserRating(ctx context.Context, userID uuid.UUID) ([]dto.RatingReponse, error) {
+	var rating []entity.Rating
+	ux := db.connection.Where("user_id = ?", userID).Find(&rating)
+	if ux.Error != nil {
+		return []dto.RatingReponse{}, ux.Error
+	}
+	var ratingDTOArray []dto.RatingReponse
+	for _, res := range rating {
+		ratingDTO := dto.RatingReponse{
+			ID: res.ID,
+			Rating: res.Rating,
+			SeriID: res.SeriID,
+			UserID: res.UserID,
+		}
+		ratingDTOArray = append(ratingDTOArray, ratingDTO)
+	}
+	
+	return ratingDTOArray, nil
+}
+
+func(db *seriConnection) FindUserSeriRating(ctx context.Context, userID uuid.UUID, seriID int) (dto.RatingReponse, error) {
+	var rating entity.Rating
+	ux := db.connection.Where("user_id = ? AND seri_id = ?", userID, seriID).Take(&rating)
+	if ux.Error != nil {
+		return dto.RatingReponse{}, ux.Error
+	}
+	ratingDTO := dto.RatingReponse{
+		ID: rating.ID,
+		Rating: rating.Rating,
+		SeriID: rating.SeriID,
+		UserID: rating.UserID,
+	}
+	return ratingDTO, nil
 }

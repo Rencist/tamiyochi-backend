@@ -17,6 +17,8 @@ type SeriService interface {
 	UpdateSeri(ctx context.Context, seriDTO dto.SeriUpdateDTO) (error)
 	FindSeriByID(ctx context.Context, seriID int) (dto.SeriResponseDTO, error)
 	UpsertRating(ctx context.Context, seriID int, rating float32, userID uuid.UUID) (error)
+	FindUserRating(ctx context.Context, userID uuid.UUID) ([]dto.RatingReponse, error)
+	FindUserSeriRating(ctx context.Context, userID uuid.UUID, seriID int) (dto.RatingReponse, error)
 }
 
 type seriService struct {
@@ -66,4 +68,12 @@ func(us *seriService) UpsertRating(ctx context.Context, seriID int, rating float
 		return us.seriRepository.UpdateRating(ctx, seriID, rating, userID)	
 	} 
 	return us.seriRepository.AddRating(ctx, seriID, rating, userID)	
+}
+
+func(us *seriService) FindUserRating(ctx context.Context, userID uuid.UUID) ([]dto.RatingReponse, error) {
+	return us.seriRepository.FindUserRating(ctx, userID)
+}
+
+func(us *seriService) FindUserSeriRating(ctx context.Context, userID uuid.UUID, seriID int) (dto.RatingReponse, error) {
+	return us.seriRepository.FindUserSeriRating(ctx, userID, seriID)
 }
