@@ -6,11 +6,12 @@ import (
 	"tamiyochi-backend/entity"
 
 	"github.com/google/uuid"
+	"github.com/mashingan/smapping"
 	"gorm.io/gorm"
 )
 
 type CartRepository interface {
-	CreateCart(ctx context.Context, cart entity.Cart) (entity.Cart, error)
+	CreateCart(ctx context.Context, cartDTO dto.CartCreateDTO) (entity.Cart, error)
 	FindCartByUserIDResponse(ctx context.Context, userID uuid.UUID) (dto.CartResponse, error)
 	FindCartByUserID(ctx context.Context, userID uuid.UUID) ([]entity.Cart, error)
 	DeleteCart(ctx context.Context, mangaID int) error
@@ -29,14 +30,22 @@ func NewCartRepository(db *gorm.DB) CartRepository {
 	}
 }
 
-func (db *cartConnection) CreateCart(ctx context.Context, cart entity.Cart) (entity.Cart, error) {
-	cartID := uuid.New()
-	cart.ID = cartID
-	uc := db.connection.Create(&cart)
-	if uc.Error != nil {
-		return entity.Cart{}, uc.Error
+func (db *cartConnection) CreateCart(ctx context.Context, cartDTO dto.CartCreateDTO) (entity.Cart, error) {
+	// var cartEntity entity.Cart
+	cartEntity := entity.Cart{}
+	err := smapping.FillStruct(&cartEntity, smapping.MapFields(cartDTO))
+	if err != nil {
+		return cartEntity, err
 	}
-	return cart, nil
+	for i := 0; i < cartDTO.Jumlah; i++ {
+		cartID := uuid.New()
+		cartEntity.ID = cartID
+		uc := db.connection.Create(&cartEntity)
+		if uc.Error != nil {
+			return entity.Cart{}, uc.Error
+		}
+	}
+	return cartEntity, nil
 }
 
 func (db *cartConnection) FindCartByUserIDResponse(ctx context.Context, userID uuid.UUID) (dto.CartResponse, error) {

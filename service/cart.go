@@ -7,7 +7,6 @@ import (
 	"tamiyochi-backend/repository"
 
 	"github.com/google/uuid"
-	"github.com/mashingan/smapping"
 )
 
 type CartService interface {
@@ -28,12 +27,12 @@ func NewCartService(ur repository.CartRepository) CartService {
 }
 
 func(us *cartService) CreateCart(ctx context.Context, cartDTO dto.CartCreateDTO) (entity.Cart, error) {
-	cart := entity.Cart{}
-	err := smapping.FillStruct(&cart, smapping.MapFields(cartDTO))
-	if err != nil {
-		return cart, err
-	}
-	return us.cartRepository.CreateCart(ctx, cart)
+	// cart := entity.Cart{}
+	// err := smapping.FillStruct(&cart, smapping.MapFields(cartDTO))
+	// if err != nil {
+	// 	return cart, err
+	// }
+	return us.cartRepository.CreateCart(ctx, cartDTO)
 }
 
 func(us *cartService) FindCartByUserID(ctx context.Context, userID uuid.UUID) (dto.CartResponse, error) {

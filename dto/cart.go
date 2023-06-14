@@ -6,6 +6,7 @@ type CartCreateDTO struct {
 	ID uuid.UUID `gorm:"primary_key;not_null" json:"id"`
 
 	MangaID int `gorm:"foreignKey" json:"manga_id" binding:"required"`
+	Jumlah int `json:"jumlah" binding:"required"`
 
 	UserID uuid.UUID `gorm:"foreignKey" json:"user_id" binding:"required"`
 }
