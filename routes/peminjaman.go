@@ -13,5 +13,6 @@ func PeminjamanRoutes(router *gin.Engine, PeminjamanController controller.Peminj
 	{
 		peminjamanRoutes.POST("", middleware.Authenticate(jwtService, false), PeminjamanController.CreatePeminjaman)
 		peminjamanRoutes.GET("", middleware.Authenticate(jwtService, false), PeminjamanController.GetAllPeminjamanUser)
+		peminjamanRoutes.POST("/denda", middleware.Authenticate(jwtService, false), PeminjamanController.PaidDenda)
 	}
 }

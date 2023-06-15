@@ -37,3 +37,9 @@ type PeminjamanReponse struct {
 	IsDendaLunas		string		`json:"is_denda_lunas"`
 	JumlahSewa			int 		`json:"jumlah_sewa"`
 }
+
+type DendaCreateDTO struct {
+	BuktiPembayaran     string 		`json:"bukti_pembayaran" binding:"required"`
+	AtasNama			string 		`json:"atas_nama" binding:"required"`
+	PeminjamanID		uuid.UUID	`json:"peminjaman_id" binding:"required"`
+}

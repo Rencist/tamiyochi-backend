@@ -14,6 +14,7 @@ type PeminjamanRepository interface {
 	CreatePeminjamanManga(ctx context.Context, peminjamanManga entity.PeminjamanManga) (entity.PeminjamanManga, error)
 	FindPeminjamanMangaByPeminjamanID(ctx context.Context, peminjamanID uuid.UUID) ([]entity.PeminjamanManga, error)
 	FindDendaByPeminjamanID(ctx context.Context, peminjamanID uuid.UUID) (entity.Denda, error)
+	PaidDenda(ctx context.Context, UserID uuid.UUID, peminjamanID uuid.UUID) (error)
 }
 
 type peminjamanConnection struct {
@@ -67,4 +68,21 @@ func(db *peminjamanConnection) FindDendaByPeminjamanID(ctx context.Context, pemi
 		return entity.Denda{}, tx.Error
 	}
 	return denda, nil
+}
+
+func(db *peminjamanConnection) PaidDenda(ctx context.Context, UserID uuid.UUID, peminjamanID uuid.UUID) (error) {
+	var peminjaman entity.Peminjaman
+	tx := db.connection.Model(entity.Peminjaman{}).Where("user_id = ? and id = ?", UserID, peminjamanID).Take(&peminjaman)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	tx = db.connection.Model(&entity.Denda{}).Where("peminjaman_id = ?", peminjamanID).Update("is_lunas", "1").Delete(&entity.Denda{})
+	if tx.Error != nil {
+		return tx.Error
+	}
+	tx = db.connection.Model(entity.Peminjaman{}).Where("id = ?", peminjamanID).Update("status_peminjaman", "Sudah Membayar Denda")
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
 }

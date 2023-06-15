@@ -15,6 +15,7 @@ import (
 type PeminjamanService interface {
 	CreatePeminjaman(ctx context.Context, peminjamanDTO dto.PeminjamanCreateDTO) (entity.Peminjaman, error)
 	GetAllPeminjamanUser(ctx context.Context, userID uuid.UUID) ([]dto.PeminjamanReponse, error)
+	PaidDenda(ctx context.Context, UserID uuid.UUID, denda dto.DendaCreateDTO) (error)
 }
 
 type peminjamanService struct {
@@ -140,4 +141,12 @@ func(us *peminjamanService) GetAllPeminjamanUser(ctx context.Context, userID uui
 	}
 	
 	return listPeminjamanDTOArray, err
+}
+
+func(us *peminjamanService) PaidDenda(ctx context.Context, UserID uuid.UUID, denda dto.DendaCreateDTO) (error) {
+	err := us.peminjamanRepository.PaidDenda(ctx, UserID, denda.PeminjamanID)
+	if err != nil {
+		return err
+	}
+	return nil
 }
