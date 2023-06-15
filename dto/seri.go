@@ -17,15 +17,15 @@ type SeriCreateDTO struct {
 }
 
 type SeriUpdateDTO struct {
-	ID   			int `gorm:"primary_key;not_null" json:"id"`
-	Judul 			string    `json:"judul" form:"judul"`
-	Sinopsis 		string    `json:"sinopsis" form:"sinopsis"`
-	TahunTerbit 	string    `json:"tahun_terbit" form:"tahun_terbit"`
-	Skor 			float32    `json:"skor" form:"skor"`
-	TotalPenilai 	int    `json:"total_penilai" form:"total_penilai"`
-	TotalPembaca 	int    `json:"total_pembaca" form:"total_pembaca"`
-
-	PenerbitID 		int   `gorm:"foreignKey" json:"penerbit_id" form:"penerbit_id"`
+	ID   			int 		`gorm:"primary_key;not_null" json:"id"`
+	Judul 			string    	`json:"judul" form:"judul"`
+	Sinopsis 		string    	`json:"sinopsis" form:"sinopsis"`
+	TahunTerbit 	string    	`json:"tahun_terbit" form:"tahun_terbit"`
+	Skor 			float32    	`json:"skor" form:"skor"`
+	TotalPenilai 	int    		`json:"total_penilai" form:"total_penilai"`
+	TotalPembaca 	int    		`json:"total_pembaca" form:"total_pembaca"`
+	Foto         	string    	`json:"foto" form:"total_pembaca"`
+	PenerbitID 		int   		`gorm:"foreignKey" json:"penerbit_id" form:"penerbit_id"`
 }
 
 type SeriResponseDTO struct {

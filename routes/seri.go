@@ -14,6 +14,7 @@ func SeriRoutes(router *gin.Engine, SeriController controller.SeriController, jw
 		seriRoutes.POST("", middleware.Authenticate(jwtService, true), SeriController.CreateSeri)
 		seriRoutes.GET("", SeriController.GetAllSeri)
 		seriRoutes.GET("/:id", SeriController.FindSeriByID)
+		seriRoutes.PUT("/:id", middleware.Authenticate(jwtService, true), SeriController.UpdateSeri)
 		seriRoutes.DELETE("/", middleware.Authenticate(jwtService, false), SeriController.DeleteSeri)
 		seriRoutes.PUT("/", middleware.Authenticate(jwtService, false), SeriController.UpdateSeri)
 		seriRoutes.POST("/rating", middleware.Authenticate(jwtService, false), SeriController.UpsertRating)
