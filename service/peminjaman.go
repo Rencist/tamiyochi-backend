@@ -87,7 +87,7 @@ func(us *peminjamanService) GetAllPeminjamanUser(ctx context.Context, userID uui
 	var listPeminjamanDTO dto.PeminjamanReponse
 	var listPeminjamanManga []entity.PeminjamanManga
 
-	peminjaman, err := us.peminjamanRepository.GetAllPeminjamanUser(ctx)
+	peminjaman, err := us.peminjamanRepository.GetAllPeminjamanUser(ctx, userID)
 	if err != nil {
 		return nil, err
 	}

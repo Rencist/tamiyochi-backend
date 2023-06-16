@@ -10,7 +10,7 @@ import (
 
 type PeminjamanRepository interface {
 	CreatePeminjaman(ctx context.Context, peminjaman entity.Peminjaman) (entity.Peminjaman, error)
-	GetAllPeminjamanUser(ctx context.Context) ([]entity.Peminjaman, error)
+	GetAllPeminjamanUser(ctx context.Context, userID uuid.UUID) ([]entity.Peminjaman, error)
 	CreatePeminjamanManga(ctx context.Context, peminjamanManga entity.PeminjamanManga) (entity.PeminjamanManga, error)
 	FindPeminjamanMangaByPeminjamanID(ctx context.Context, peminjamanID uuid.UUID) ([]entity.PeminjamanManga, error)
 	FindDendaByPeminjamanID(ctx context.Context, peminjamanID uuid.UUID) (entity.Denda, error)
@@ -35,9 +35,9 @@ func(db *peminjamanConnection) CreatePeminjaman(ctx context.Context, peminjaman 
 	return peminjaman, nil
 }
 
-func(db *peminjamanConnection) GetAllPeminjamanUser(ctx context.Context) ([]entity.Peminjaman, error) {
+func(db *peminjamanConnection) GetAllPeminjamanUser(ctx context.Context, userID uuid.UUID) ([]entity.Peminjaman, error) {
 	var listPeminjaman []entity.Peminjaman
-	tx := db.connection.Find(&listPeminjaman)
+	tx := db.connection.Model(entity.Peminjaman{}).Where("user_id = ?", userID).Find(&listPeminjaman)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
